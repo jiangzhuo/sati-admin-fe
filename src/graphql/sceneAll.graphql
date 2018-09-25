@@ -1,0 +1,10 @@
+query admin {
+  getScene {
+    code
+    message
+    data {
+      id
+      name
+    }
+  }
+}

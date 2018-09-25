@@ -1,0 +1,6 @@
+mutation admin($id: String!) {
+  deleteScene(id: $id) {
+    code
+    message
+  }
+}
