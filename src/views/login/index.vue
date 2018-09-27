@@ -63,37 +63,40 @@
 </template>
 
 <script>
-import { isvalidUsername } from '@/utils/validate'
+// import { isvalidUsername } from '@/utils/validate'
 import LangSelect from '@/components/LangSelect'
+import { getToken } from '@/utils/auth'
 import SocialSign from './socialsignin'
 import { onLogin } from '@/vue-apollo'
+import USER_LOGIN from '@/graphqls/userLoginByMobileAndPassword.graphql'
+// import USER_CURRENT from '@/graphqls/userCurrent.graphql'
 
 export default {
   name: 'Login',
   components: { LangSelect, SocialSign },
   data() {
-    const validateUsername = (rule, value, callback) => {
-      if (!isvalidUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
-      } else {
-        callback()
-      }
-    }
-    const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
-      } else {
-        callback()
-      }
-    }
+    // const validateUsername = (rule, value, callback) => {
+    //   if (!isvalidUsername(value)) {
+    //     callback(new Error('Please enter the correct user name'))
+    //   } else {
+    //     callback()
+    //   }
+    // }
+    // const validatePassword = (rule, value, callback) => {
+    //   if (value.length < 6) {
+    //     callback(new Error('The password can not be less than 6 digits'))
+    //   } else {
+    //     callback()
+    //   }
+    // }
     return {
       loginForm: {
-        username: 'admin',
-        password: '1111111'
+        username: '1',
+        password: '666'
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        // username: [{ required: true, trigger: 'blur', validator: validateUsername }],
+        // password: [{ required: true, trigger: 'blur', validator: validatePassword }]
       },
       passwordType: 'password',
       loading: false,
@@ -128,13 +131,37 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('LoginByUsername', this.loginForm).then(() => {
-            this.loading = false
-            onLogin(this.$apollo.provider.defaultClient, 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1YmEwOTlkODc4MmZmYzc5NDlmOTU2MDUiLCJpYXQiOjE1Mzc3ODAyMjMsImV4cCI6MTUzNzg2NjYyM30.1vEfZlHKCoY5iwPR3UEAK4-sHbWUMRqmZgfV64pVXts')
-            this.$router.push({ path: this.redirect || '/' })
-          }).catch(() => {
-            this.loading = false
+          const mobile = this.loginForm.username.trim()
+          const password = this.loginForm.password.trim()
+          this.$apollo.query({ query: USER_LOGIN, variables: { mobile, password }}).then((loginResult) => {
+            const data = loginResult.data
+            this.$store.dispatch('LoginByUsername', data.loginByMobileAndPassword.data.accessToken).then(() => {
+              this.loading = false
+              onLogin(this.$apollo.provider.defaultClient, getToken()).then(() => {
+                // this.$apollo.query({ query: USER_CURRENT }).then((currentUserResult) => {
+                //   const data = currentUserResult.data
+                //   this.$store.dispatch('GetUserInfo', data.getCurrentUser).then(res => { // 拉取user_info
+                //     const roles = res.data.roles // note: roles must be a array! such as: ['editor','develop']
+                //     this.$store.dispatch('GenerateRoutes', { roles }).then(() => { // 根据roles权限生成可访问的路由表
+                //       this.$router.addRoutes(this.$store.getters.addRouters) // 动态添加可访问路由表
+                //     })
+                //     this.$router.push({ path: this.redirect || '/' })
+                //   }).catch((err) => {
+                //     this.$store.dispatch('FedLogOut').then(() => {
+                //       console.log(err)
+                //       // Message.error(err || 'Verification failed, please login again')
+                //       // next({ path: '/' })
+                //     })
+                //   })
+                // })
+                this.loading = false
+                this.$router.push({ path: this.redirect || '/' })
+              })
+            }).catch(() => {
+              this.loading = false
+            })
           })
+          // this.$store.dispatch('LoginByUsername', this.loginForm).then(() => {
         } else {
           console.log('error submit!!')
           return false

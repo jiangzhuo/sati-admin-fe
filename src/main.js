@@ -51,6 +51,7 @@ new Vue({
   store,
   i18n,
   // apolloProvider,
-  provide: createProvider({}, { router }).provide(),
+  apolloProvider: createProvider({}, { router }),
+  // provide: createProvider({}, { router }).provide(),
   render: h => h(App)
 })

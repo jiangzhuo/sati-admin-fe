@@ -1,6 +1,9 @@
 <template>
   <div class="app-container">
-    <el-button style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">Add</el-button>
+
+    <div class="filter-container">
+      <el-button style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">Add</el-button>
+    </div>
 
     <el-table v-loading="this.$apollo.queries.sceneList.loading" :data="sceneList" border fit highlight-current-row style="width: 100%">
 
@@ -46,10 +49,10 @@
 
 <script>
 // import { fetchList } from '@/api/article'
-import SCENE_ALL from '@/graphql/sceneAll.graphql'
-import SCENE_UPDATE from '@/graphql/sceneUpdate.graphql'
-import SCENE_DELETE from '@/graphql/sceneDelete.graphql'
-import SCENE_CREATE from '@/graphql/sceneCreate.graphql'
+import SCENE_ALL from '@/graphqls/sceneAll.graphql'
+import SCENE_UPDATE from '@/graphqls/sceneUpdate.graphql'
+import SCENE_DELETE from '@/graphqls/sceneDelete.graphql'
+import SCENE_CREATE from '@/graphqls/sceneCreate.graphql'
 
 export default {
   name: 'SceneEditTable',

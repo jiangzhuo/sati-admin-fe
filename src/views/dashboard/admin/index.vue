@@ -3,7 +3,7 @@
 
     <github-corner style="position: absolute; top: 0px; border: 0; right: 0;"/>
 
-    <el-button v-text="test.sayWanderHello.message"/>
+    <el-button v-text="this.$store.getters.name"/>
     <panel-group @handleSetLineChartData="handleSetLineChartData"/>
     <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
       <line-chart :chart-data="lineChartData"/>

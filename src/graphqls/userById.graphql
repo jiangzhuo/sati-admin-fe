@@ -1,0 +1,14 @@
+query admin($id: String!) {
+  getUserById(id: $id) {
+    code
+    message
+    data {
+      id
+      mobile
+      nickname
+      avatar
+      status
+      updateTime
+    }
+  }
+}

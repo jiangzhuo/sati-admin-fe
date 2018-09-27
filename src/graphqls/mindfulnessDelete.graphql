@@ -1,0 +1,6 @@
+mutation admin {
+  deleteMindfulness(id: "5bab3ccd83884e50cda3c5c9") {
+    code
+    message
+  }
+}

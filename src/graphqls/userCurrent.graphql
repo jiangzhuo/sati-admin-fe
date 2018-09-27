@@ -1,0 +1,14 @@
+query admin{
+  getCurrentUser {
+    code
+    message
+    data {
+      id
+      mobile
+      nickname
+      avatar
+      status
+      updateTime
+    }
+  }
+}

@@ -112,7 +112,7 @@ export default new Router({
 export const asyncRouterMap = [
   tableRouter,
   {
-    path: '/tab',
+    path: '/scene',
     component: Layout,
     children: [
       {
@@ -120,6 +120,18 @@ export const asyncRouterMap = [
         component: () => import('@/views/scene/index'),
         name: 'Scene',
         meta: { title: 'scene', icon: 'tab' }
+      }
+    ]
+  },
+  {
+    path: '/mindfulness',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/mindfulness/index'),
+        name: 'Mindfulness',
+        meta: { title: 'mindfulness', icon: 'tab' }
       }
     ]
   },
