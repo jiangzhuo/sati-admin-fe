@@ -4,7 +4,7 @@
       <el-button style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">Add</el-button>
     </div>
 
-    <el-table v-loading="listLoading" :data="mindfulnessList" border fit highlight-current-row style="width: 100%;">
+    <el-table v-loading="listLoading" ref="dataTable" :data="mindfulnessList" border fit highlight-current-row style="width: 100%;">
       <el-table-column :label="$t('table.id')" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
@@ -17,7 +17,13 @@
       </el-table-column>
       <el-table-column :label="$t('table.description')" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.description }}</span>
+          <el-popover
+            :content="scope.row.description"
+            :title="('table.description')"
+            placement="top"
+            trigger="hover">
+            <span slot="reference">{{ scope.row.description.substring(0,20) }}</span>
+          </el-popover>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.background')" align="center">
@@ -48,7 +54,13 @@
       </el-table-column>
       <el-table-column :label="$t('table.copy')" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.copy }}</span>
+          <el-popover
+            :content="scope.row.copy"
+            :title="('table.copy')"
+            placement="top"
+            trigger="hover">
+            <span slot="reference">{{ scope.row.copy.substring(0,20) }}</span>
+          </el-popover>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.status')" align="center">
@@ -69,16 +81,88 @@
       </el-table-column>
     </el-table>
 
+    <el-dialog :title="dialogStatus" :visible.sync="dialogFormVisible">
+      <el-form ref="dataForm" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
+        <el-form-item :label="$t('table.name')" prop="name">
+          <el-input v-model="temp.name"/>
+        </el-form-item>
+        <el-form-item :label="$t('table.description')" prop="description">
+          <el-input
+            :autosize="{ minRows: 2, maxRows: 4}"
+            v-model="temp.description"
+            type="textarea"
+            placeholder="请输入内容"/>
+        </el-form-item>
+        <el-form-item :label="$t('table.background')" prop="background">
+          <el-upload
+            :on-success="handleBackgroundSuccess"
+            :before-upload="beforeBackgroundUpload"
+            :before-remove="beforeBackgroundRemove"
+            :on-remove="handleBackgroundRemove"
+            :on-exceed="handleBackgroundExceed"
+            :limit="1"
+            accept="image/*"
+            list-type="picture"
+            action="http://localhost:5000/uploadBackground/">
+            <el-button size="small" type="primary">点击上传</el-button>
+            <div slot="tip" class="el-upload__tip">只能上传图像文件，且不超过20M</div>
+          </el-upload>
+        </el-form-item>
+        <el-form-item :label="$t('table.productId')" prop="productId">
+          <el-input v-model="temp.productId"/>
+        </el-form-item>
+        <el-form-item :label="$t('table.scenes')" prop="scenes">
+          <el-checkbox-group v-model="temp.scenes">
+            <el-checkbox
+              v-for="(sceneOption) in sceneOptions"
+              :key="sceneOption.id"
+              :label="sceneOption.id">{{ sceneOption.name }}</el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+        <el-form-item :label="$t('table.audio')" prop="audio">
+          <el-upload
+            :on-success="handleAudioSuccess"
+            :before-upload="beforeAudioUpload"
+            :before-remove="beforeAudioRemove"
+            :on-remove="handleAudioRemove"
+            :on-exceed="handleAudioExceed"
+            :limit="1"
+            accept="audio/*"
+            list-type="text"
+            action="http://localhost:5000/uploadBackground/">
+            <el-button size="small" type="primary">点击上传</el-button>
+            <div slot="tip" class="el-upload__tip">只能上传音频文件，且不超过20M</div>
+          </el-upload>
+        </el-form-item>
+        <el-form-item v-show="false" :label="$t('table.author')" prop="author">
+          <el-input v-model="temp.author"/>
+        </el-form-item>
+        <el-form-item :label="$t('table.copy')" prop="copy">
+          <el-input
+            :autosize="{ minRows: 2, maxRows: 4}"
+            v-model="temp.copy"
+            type="textarea"
+            placeholder="请输入内容"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
+        <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">{{ $t('table.confirm') }}</el-button>
+        <el-button v-else type="primary" @click="updateData">{{ $t('table.confirm') }}</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
 
+// import * as OSS from 'ali-oss'
 import MINDFULNESS_ALL from '@/graphqls/mindfulnessAll.graphql'
 import SCENE_ALL from '@/graphqls/sceneAll.graphql'
 // import MINDFULNESS_UPDATE from '@/graphqls/mindfulnessUpdate.graphql'
 // import MINDFULNESS_DELETE from '@/graphqls/mindfulnessDelete.graphql'
-// import MINDFULNESS_CREATE from '@/graphqls/mindfulnessCreate.graphql'
+import MINDFULNESS_CREATE from '@/graphqls/mindfulnessCreate.graphql'
 import USER_BY_ID from '@/graphqls/userById.graphql'
 
 export default {
@@ -86,6 +170,7 @@ export default {
   data() {
     return {
       sceneMap: {},
+      sceneOptions: [],
       userMap: {},
       mindfulnessList: [
         // {
@@ -126,7 +211,9 @@ export default {
       ],
       listLoading: true,
       temp: {
+        scenes: []
       },
+      dialogStatus: 'create',
       dialogFormVisible: false
     }
   },
@@ -135,8 +222,49 @@ export default {
     await this.getList()
   },
   methods: {
+    beforeBackgroundUpload(file) {
+      const isLt20M = file.size / 1024 / 1024 < 20
+      if (!isLt20M) {
+        this.$message.error('上传头像图片大小不能超过 20MB!')
+      }
+      return isLt20M
+    },
+    handleBackgroundSuccess(res, file, fileList) {
+      this.temp.background = fileList[fileList.length - 1].response.data
+    },
+    handleBackgroundRemove() {
+      this.temp.background = ''
+    },
+    handleBackgroundExceed(files, fileList) {
+      this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
+    },
+    beforeBackgroundRemove(file) {
+      return this.$confirm(`确定移除 ${file.name}？`)
+    },
+    beforeAudioUpload(file) {
+      const isLt20M = file.size / 1024 / 1024 < 20
+
+      if (!isLt20M) {
+        this.$message.error('上传头像图片大小不能超过 20MB!')
+      }
+      return isLt20M
+    },
+    handleAudioSuccess(res, file, fileList) {
+      console.log(fileList[fileList.length - 1].response.data)
+      this.temp.audio = fileList[fileList.length - 1].response.data
+    },
+    handleAudioRemove() {
+      this.temp.audio = ''
+    },
+    handleAudioExceed(files, fileList) {
+      this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
+    },
+    beforeAudioRemove(file) {
+      return this.$confirm(`确定移除 ${file.name}？`)
+    },
     async getScene() {
       const result = await this.$apollo.query({ query: SCENE_ALL })
+      this.sceneOptions = result.data.getScene.data
       result.data.getScene.data.forEach((scene) => {
         this.sceneMap[scene.id] = scene
       })
@@ -172,31 +300,71 @@ export default {
       this.listLoading = false
     },
     handleCreate() {
-      this.resetTemp()
+      this.temp = {
+        scenes: []
+      }
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
-    }
-    // createData() {
-    //   this.$refs['dataForm'].validate((valid) => {
-    //     if (valid) {
-    //       this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-    //       this.temp.author = 'vue-element-admin'
-    //       createArticle(this.temp).then(() => {
-    //         this.list.unshift(this.temp)
-    //         this.dialogFormVisible = false
-    //         this.$notify({
-    //           title: '成功',
-    //           message: '创建成功',
-    //           type: 'success',
-    //           duration: 2000
-    //         })
-    //       })
-    //     }
-    //   })
-    // },
+    },
+    async createData() {
+      console.log(this.temp)
+      this.temp.author = this.$store.getters.id
+      const data = await this.$apollo.mutate({
+        // 查询语句
+        mutation: MINDFULNESS_CREATE,
+        // 参数
+        variables: {
+          createData: this.temp
+        }
+      })
+
+      console.log('getList')
+      // setTimeout(() => {
+      //   this.$apollo.query({
+      //     // 查询语句
+      //     query: MINDFULNESS_ALL,
+      //     // 参数
+      //     variables: {
+      //       first: 20
+      //     }
+      //   }).then((res) => {
+      //     console.log(res)
+      //   })
+      // }, 5000)
+      const result = await this.$apollo.query({
+        // 查询语句
+        query: MINDFULNESS_ALL,
+        // 参数
+        variables: {
+          first: 20
+        },
+        fetchPolicy: 'network-only' // 只从网络获取
+      })
+      this.mindfulnessList = []
+      console.log(result.data.getMindfulness.data)
+      this.mindfulnessList = result.data.getMindfulness.data
+
+      if (data.data.createMindfulness.code !== 200) {
+        this.$notify({
+          title: '失败',
+          message: data.data.createMindfulness.message,
+          type: 'error',
+          duration: 2000
+        })
+      } else {
+        // 结果
+        this.dialogFormVisible = false
+        this.$notify({
+          title: '成功',
+          message: '创建成功',
+          type: 'success',
+          duration: 2000
+        })
+      }
+    },
     // handleUpdate(row) {
     //   this.temp = Object.assign({}, row) // copy obj
     //   this.temp.timestamp = new Date(this.temp.timestamp)
@@ -206,30 +374,8 @@ export default {
     //     this.$refs['dataForm'].clearValidate()
     //   })
     // },
-    // updateData() {
-    //   this.$refs['dataForm'].validate((valid) => {
-    //     if (valid) {
-    //       const tempData = Object.assign({}, this.temp)
-    //       tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-    //       updateArticle(tempData).then(() => {
-    //         for (const v of this.list) {
-    //           if (v.id === this.temp.id) {
-    //             const index = this.list.indexOf(v)
-    //             this.list.splice(index, 1, this.temp)
-    //             break
-    //           }
-    //         }
-    //         this.dialogFormVisible = false
-    //         this.$notify({
-    //           title: '成功',
-    //           message: '更新成功',
-    //           type: 'success',
-    //           duration: 2000
-    //         })
-    //       })
-    //     }
-    //   })
-    // },
+    updateData() {
+    }
     // handleDelete(row) {
     //   this.$notify({
     //     title: '成功',
