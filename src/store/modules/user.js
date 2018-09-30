@@ -1,5 +1,5 @@
 // import { loginByUsername, logout, getUserInfo } from '@/api/login'
-import { logout } from '@/api/login'
+// import { logout } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 // import USER_LOGIN from '@/graphqls/userLoginByMobileAndPassword.graphql'
 
@@ -132,14 +132,18 @@ const user = {
     // 登出
     LogOut({ commit, state }) {
       return new Promise((resolve, reject) => {
-        logout(state.token).then(() => {
-          commit('SET_TOKEN', '')
-          commit('SET_ROLES', [])
-          removeToken()
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
+        commit('SET_TOKEN', '')
+        commit('SET_ROLES', [])
+        removeToken()
+        resolve()
+        // logout(state.token).then(() => {
+        //   commit('SET_TOKEN', '')
+        //   commit('SET_ROLES', [])
+        //   removeToken()
+        //   resolve()
+        // }).catch(error => {
+        //   reject(error)
+        // })
       })
     },
 
