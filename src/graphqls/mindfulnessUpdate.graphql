@@ -8,7 +8,7 @@ mutation admin($id: String!, $updateData: updateMindfulnessRequest!) {
       name
       description
       scenes
-      productId
+      price
       createTime
       updateTime
       author

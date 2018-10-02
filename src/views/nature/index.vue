@@ -4,7 +4,7 @@
       <el-button style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">Add</el-button>
     </div>
 
-    <el-table v-loading="listLoading" ref="dataTable" :data="mindfulnessList" border fit highlight-current-row style="width: 100%;">
+    <el-table v-loading="listLoading" ref="dataTable" :data="natureList" border fit highlight-current-row style="width: 100%;">
       <el-table-column :label="$t('table.id')" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
@@ -33,8 +33,8 @@
       </el-table-column>
       <el-table-column :label="$t('table.price')" align="center">
         <template slot-scope="scope">
+          <!--<el-tag v-for="pid in scope.row.productId" :key="pid">{{ pid }}</el-tag>-->
           <span>{{ scope.row.price }}</span>
-          <!--<el-tag v-for="pid in scope.row.price" :key="pid">{{ pid }}</el-tag>-->
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.scenes')" align="center">
@@ -51,17 +51,6 @@
         <template slot-scope="scope">
           <a :href="'user/userInfo?userId='+scope.row.author" target="_blank">{{ userMap[scope.row.author]?userMap[scope.row.author].nickname:scope.row.author }}</a>
           <!--<a href="index.vue">{{ userMap[scope.row.author]?userMap[scope.row.author].nickname:scope.row.author }}</a>-->
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.copy')" align="center">
-        <template slot-scope="scope">
-          <el-popover
-            :content="scope.row.copy"
-            :title="('table.copy')"
-            placement="top"
-            trigger="hover">
-            <span slot="reference">{{ scope.row.copy.substring(0,20) }}</span>
-          </el-popover>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.status')" align="center">
@@ -151,13 +140,6 @@
         <el-form-item v-show="false" :label="$t('table.author')" prop="author">
           <el-input v-model="temp.author"/>
         </el-form-item>
-        <el-form-item :label="$t('table.copy')" prop="copy">
-          <el-input
-            :autosize="{ minRows: 2, maxRows: 4}"
-            v-model="temp.copy"
-            type="textarea"
-            placeholder="请输入内容"/>
-        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
@@ -174,11 +156,11 @@
 
 // import * as OSS from 'ali-oss'
 import * as _ from 'lodash'
-import MINDFULNESS_ALL from '@/graphqls/mindfulnessAll.graphql'
+import NATURE_ALL from '@/graphqls/natureAll.graphql'
 import SCENE_ALL from '@/graphqls/sceneAll.graphql'
-import MINDFULNESS_UPDATE from '@/graphqls/mindfulnessUpdate.graphql'
-import MINDFULNESS_DELETE from '@/graphqls/mindfulnessDelete.graphql'
-import MINDFULNESS_CREATE from '@/graphqls/mindfulnessCreate.graphql'
+import NATURE_UPDATE from '@/graphqls/natureUpdate.graphql'
+import NATURE_DELETE from '@/graphqls/natureDelete.graphql'
+import NATURE_CREATE from '@/graphqls/natureCreate.graphql'
 import USER_BY_ID from '@/graphqls/userById.graphql'
 
 export default {
@@ -188,7 +170,7 @@ export default {
       sceneMap: {},
       sceneOptions: [],
       userMap: {},
-      mindfulnessList: [
+      natureList: [
         // {
         //   'id': '5ba0db5b18b0d02bbf55b832',
         //   'background': 'https://www.baidu.com/img/bd_logo1.png',
@@ -312,20 +294,20 @@ export default {
       this.listLoading = true
       const result = await this.$apollo.query({
         // 查询语句
-        query: MINDFULNESS_ALL,
+        query: NATURE_ALL,
         // 参数
         variables: {
           first: 20
         },
         fetchPolicy: 'network-only' // 只从网络获取
       })
-      const promises = result.data.getMindfulness.data.map((mindfulness) => {
-        return this.getUser(mindfulness.author)
+      console.log(result.data)
+      const promises = result.data.getNature.data.map((nature) => {
+        return this.getUser(nature.author)
       })
-      console.log(result)
       await Promise.all(promises)
       console.log(this.userMap)
-      this.mindfulnessList = result.data.getMindfulness.data
+      this.natureList = result.data.getNature.data
       this.listLoading = false
     },
     resetTemp() {
@@ -347,7 +329,7 @@ export default {
       // this.temp.productId = this.temp.productId.map((pidValue) => pidValue.value)
       const data = await this.$apollo.mutate({
         // 查询语句
-        mutation: MINDFULNESS_CREATE,
+        mutation: NATURE_CREATE,
         // 参数
         variables: {
           createData: this.temp
@@ -357,20 +339,20 @@ export default {
       console.log('getList')
       // const result = await this.$apollo.query({
       //   // 查询语句
-      //   query: MINDFULNESS_ALL,
+      //   query: NATURE_ALL,
       //   // 参数
       //   variables: {
       //     first: 20
       //   },
       //   fetchPolicy: 'network-only' // 只从网络获取
       // })
-      // this.mindfulnessList = result.data.getMindfulness.data
+      // this.natureList = result.data.getNature.data
       await this.getList()
 
-      if (data.data.createMindfulness.code !== 200) {
+      if (data.data.createNature.code !== 200) {
         this.$notify({
           title: '失败',
-          message: data.data.createMindfulness.message,
+          message: data.data.createNature.message,
           type: 'error',
           duration: 2000
         })
@@ -401,7 +383,7 @@ export default {
       // console.log(this.temp)
       await this.$apollo.mutate({
         // 查询语句
-        mutation: MINDFULNESS_UPDATE,
+        mutation: NATURE_UPDATE,
         // 参数
         variables: {
           id: this.temp.id,
@@ -414,7 +396,6 @@ export default {
             price: parseInt(this.temp.price),
             author: this.$store.getters.id,
             audio: this.temp.audio,
-            copy: this.temp.copy,
             status: 3
           }
         }
@@ -434,7 +415,7 @@ export default {
       this.listLoading = true
       await this.$apollo.mutate({
         // 查询语句
-        mutation: MINDFULNESS_DELETE,
+        mutation: NATURE_DELETE,
         // 参数
         variables: {
           id: row.id

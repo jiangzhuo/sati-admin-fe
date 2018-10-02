@@ -136,6 +136,18 @@ export const asyncRouterMap = [
     ]
   },
   {
+    path: '/nature',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/nature/index'),
+        name: 'Nature',
+        meta: { title: 'nature', icon: 'tab' }
+      }
+    ]
+  },
+  {
     path: '/permission',
     component: Layout,
     redirect: '/permission/index',

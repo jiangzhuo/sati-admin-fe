@@ -1,5 +1,5 @@
 query admin {
-  getMindfulness {
+  getNature {
     code
     message
     data {
@@ -13,7 +13,6 @@ query admin {
       updateTime
       author
       audio
-      copy
       status
     }
   }
