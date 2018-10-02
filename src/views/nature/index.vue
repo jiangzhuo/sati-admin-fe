@@ -326,6 +326,7 @@ export default {
     async createData() {
       console.log(this.temp)
       this.temp.author = this.$store.getters.id
+      this.temp.price = parseInt(this.temp.price)
       // this.temp.productId = this.temp.productId.map((pidValue) => pidValue.value)
       const data = await this.$apollo.mutate({
         // 查询语句

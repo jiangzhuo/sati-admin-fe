@@ -1,0 +1,6 @@
+mutation admin ($id: String!) {
+  deleteWanderAlbum(id: $id) {
+    code
+    message
+  }
+}

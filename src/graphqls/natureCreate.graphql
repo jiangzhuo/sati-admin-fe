@@ -3,7 +3,6 @@ mutation admin($createData: createNatureRequest!) {
     code
     message
     data {
-      id
       background
       name
       description

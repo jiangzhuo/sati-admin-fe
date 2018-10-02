@@ -1,5 +1,5 @@
-mutation admin($createData: createMindfulnessRequest!) {
-  createMindfulness(data: $createData) {
+mutation admin($createData: createWanderRequest!) {
+  createWander(data: $createData) {
     code
     message
     data {
@@ -13,6 +13,7 @@ mutation admin($createData: createMindfulnessRequest!) {
       author
       audio
       copy
+      wanderAlbums
       status
     }
   }

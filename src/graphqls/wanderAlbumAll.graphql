@@ -1,8 +1,9 @@
-mutation admin($createData: createMindfulnessRequest!) {
-  createMindfulness(data: $createData) {
+query admin {
+  getWanderAlbum {
     code
     message
     data {
+      id
       background
       name
       description
@@ -11,7 +12,6 @@ mutation admin($createData: createMindfulnessRequest!) {
       createTime
       updateTime
       author
-      audio
       copy
       status
     }

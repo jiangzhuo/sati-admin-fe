@@ -4,7 +4,7 @@
       <el-button style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">Add</el-button>
     </div>
 
-    <el-table v-loading="listLoading" ref="dataTable" :data="mindfulnessList" border fit highlight-current-row style="width: 100%;">
+    <el-table v-loading="listLoading" ref="dataTable" :data="wanderAlbumList" border fit highlight-current-row style="width: 100%;">
       <el-table-column :label="$t('table.id')" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
@@ -33,18 +33,13 @@
       </el-table-column>
       <el-table-column :label="$t('table.price')" align="center">
         <template slot-scope="scope">
+          <!--<el-tag v-for="pid in scope.row.productId" :key="pid">{{ pid }}</el-tag>-->
           <span>{{ scope.row.price }}</span>
-          <!--<el-tag v-for="pid in scope.row.price" :key="pid">{{ pid }}</el-tag>-->
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.scenes')" align="center">
         <template slot-scope="scope">
           <el-tag v-for="scene in scope.row.scenes" :key="scene">{{ sceneMap[scene].name }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.audio')" align="center">
-        <template slot-scope="scope">
-          <audio :src="scope.row.audio" controls="controls"/>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.author')" align="center">
@@ -132,31 +127,15 @@
               :label="sceneOption.id">{{ sceneOption.name }}</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
-        <el-form-item :label="$t('table.audio')" prop="audio">
-          <el-upload
-            :on-success="handleAudioSuccess"
-            :before-upload="beforeAudioUpload"
-            :before-remove="beforeAudioRemove"
-            :on-remove="handleAudioRemove"
-            :on-exceed="handleAudioExceed"
-            :limit="1"
-            :file-list="tempAudioFileList"
-            accept="audio/*"
-            list-type="text"
-            action="http://localhost:5000/uploadBackground/">
-            <el-button size="small" type="primary">点击上传</el-button>
-            <div slot="tip" class="el-upload__tip">只能上传音频文件，且不超过20M</div>
-          </el-upload>
-        </el-form-item>
-        <el-form-item v-show="false" :label="$t('table.author')" prop="author">
-          <el-input v-model="temp.author"/>
-        </el-form-item>
         <el-form-item :label="$t('table.copy')" prop="copy">
           <el-input
             :autosize="{ minRows: 2, maxRows: 4}"
             v-model="temp.copy"
             type="textarea"
             placeholder="请输入内容"/>
+        </el-form-item>
+        <el-form-item v-show="false" :label="$t('table.author')" prop="author">
+          <el-input v-model="temp.author"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -174,11 +153,11 @@
 
 // import * as OSS from 'ali-oss'
 import * as _ from 'lodash'
-import MINDFULNESS_ALL from '@/graphqls/mindfulnessAll.graphql'
+import WANDER_ALBUM_ALL from '@/graphqls/wanderAlbumAll.graphql'
 import SCENE_ALL from '@/graphqls/sceneAll.graphql'
-import MINDFULNESS_UPDATE from '@/graphqls/mindfulnessUpdate.graphql'
-import MINDFULNESS_DELETE from '@/graphqls/mindfulnessDelete.graphql'
-import MINDFULNESS_CREATE from '@/graphqls/mindfulnessCreate.graphql'
+import WANDER_ALBUM_UPDATE from '@/graphqls/wanderAlbumUpdate.graphql'
+import WANDER_ALBUM_DELETE from '@/graphqls/wanderAlbumDelete.graphql'
+import WANDER_ALBUM_CREATE from '@/graphqls/wanderAlbumCreate.graphql'
 import USER_BY_ID from '@/graphqls/userById.graphql'
 
 export default {
@@ -188,7 +167,7 @@ export default {
       sceneMap: {},
       sceneOptions: [],
       userMap: {},
-      mindfulnessList: [
+      wanderAlbumList: [
         // {
         //   'id': '5ba0db5b18b0d02bbf55b832',
         //   'background': 'https://www.baidu.com/img/bd_logo1.png',
@@ -312,20 +291,20 @@ export default {
       this.listLoading = true
       const result = await this.$apollo.query({
         // 查询语句
-        query: MINDFULNESS_ALL,
+        query: WANDER_ALBUM_ALL,
         // 参数
         variables: {
           first: 20
         },
         fetchPolicy: 'network-only' // 只从网络获取
       })
-      const promises = result.data.getMindfulness.data.map((mindfulness) => {
-        return this.getUser(mindfulness.author)
+      console.log(result.data)
+      const promises = result.data.getWanderAlbum.data.map((wanderAlbum) => {
+        return this.getUser(wanderAlbum.author)
       })
-      console.log(result)
       await Promise.all(promises)
       console.log(this.userMap)
-      this.mindfulnessList = result.data.getMindfulness.data
+      this.wanderAlbumList = result.data.getWanderAlbum.data
       this.listLoading = false
     },
     resetTemp() {
@@ -344,11 +323,11 @@ export default {
     async createData() {
       console.log(this.temp)
       this.temp.author = this.$store.getters.id
-      this.temp.price = parseInt(this.temp.price)
       // this.temp.productId = this.temp.productId.map((pidValue) => pidValue.value)
+      this.temp.price = parseInt(this.temp.price)
       const data = await this.$apollo.mutate({
         // 查询语句
-        mutation: MINDFULNESS_CREATE,
+        mutation: WANDER_ALBUM_CREATE,
         // 参数
         variables: {
           createData: this.temp
@@ -358,20 +337,20 @@ export default {
       console.log('getList')
       // const result = await this.$apollo.query({
       //   // 查询语句
-      //   query: MINDFULNESS_ALL,
+      //   query: WANDER_ALBUM_ALL,
       //   // 参数
       //   variables: {
       //     first: 20
       //   },
       //   fetchPolicy: 'network-only' // 只从网络获取
       // })
-      // this.mindfulnessList = result.data.getMindfulness.data
+      // this.wanderAlbumList = result.data.getWanderAlbum.data
       await this.getList()
 
-      if (data.data.createMindfulness.code !== 200) {
+      if (data.data.createWanderAlbum.code !== 200) {
         this.$notify({
           title: '失败',
-          message: data.data.createMindfulness.message,
+          message: data.data.createWanderAlbum.message,
           type: 'error',
           duration: 2000
         })
@@ -402,7 +381,7 @@ export default {
       // console.log(this.temp)
       await this.$apollo.mutate({
         // 查询语句
-        mutation: MINDFULNESS_UPDATE,
+        mutation: WANDER_ALBUM_UPDATE,
         // 参数
         variables: {
           id: this.temp.id,
@@ -415,7 +394,6 @@ export default {
             price: parseInt(this.temp.price),
             author: this.$store.getters.id,
             audio: this.temp.audio,
-            copy: this.temp.copy,
             status: 3
           }
         }
@@ -435,7 +413,7 @@ export default {
       this.listLoading = true
       await this.$apollo.mutate({
         // 查询语句
-        mutation: MINDFULNESS_DELETE,
+        mutation: WANDER_ALBUM_DELETE,
         // 参数
         variables: {
           id: row.id

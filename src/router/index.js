@@ -148,6 +148,29 @@ export const asyncRouterMap = [
     ]
   },
   {
+    path: '/wander',
+    name: 'Wander',
+    meta: {
+      title: 'Wander',
+      icon: 'tab'
+    },
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/wander/index'),
+        name: 'Wander',
+        meta: { title: 'wander', icon: 'tab' }
+      },
+      {
+        path: 'wanderAlbum',
+        component: () => import('@/views/wander/wanderAlbum'),
+        name: 'WanderAlbum',
+        meta: { title: 'wanderAlbum', icon: 'tab' }
+      }
+    ]
+  },
+  {
     path: '/permission',
     component: Layout,
     redirect: '/permission/index',
