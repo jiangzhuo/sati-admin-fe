@@ -81,7 +81,8 @@
       <el-table-column :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button type="primary" size="small" icon="el-icon-edit" @click="handleUpdate(scope.row)">Edit</el-button>
-          <el-button type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row)">delete</el-button>
+          <el-button v-if="scope.row.status&0b1" type="info" size="small" icon="el-icon-delete" @click="handleRevertDeleted(scope.row)">revert</el-button>
+          <el-button v-else type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row)">delete</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -182,6 +183,7 @@ import MINDFULNESS_ALL from '@/graphqls/mindfulnessAll.graphql'
 import SCENE_ALL from '@/graphqls/sceneAll.graphql'
 import MINDFULNESS_UPDATE from '@/graphqls/mindfulnessUpdate.graphql'
 import MINDFULNESS_DELETE from '@/graphqls/mindfulnessDelete.graphql'
+import MINDFULNESS_REVERT_DELETED from '@/graphqls/mindfulnessRevertDeleted.graphql'
 import MINDFULNESS_CREATE from '@/graphqls/mindfulnessCreate.graphql'
 import USER_BY_ID from '@/graphqls/userById.graphql'
 
@@ -450,6 +452,25 @@ export default {
       this.$notify({
         title: '成功',
         message: '删除成功',
+        type: 'success',
+        duration: 2000
+      })
+    },
+    async handleRevertDeleted(row) {
+      this.listLoading = true
+      await this.$apollo.mutate({
+        // 查询语句
+        mutation: MINDFULNESS_REVERT_DELETED,
+        // 参数
+        variables: {
+          id: row.id
+        }
+      })
+      await this.getList()
+      this.listLoading = false
+      this.$notify({
+        title: '成功',
+        message: '恢复成功',
         type: 'success',
         duration: 2000
       })

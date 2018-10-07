@@ -85,7 +85,8 @@
       <el-table-column :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button type="primary" size="small" icon="el-icon-edit" @click="handleUpdate(scope.row)">Edit</el-button>
-          <el-button type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row)">delete</el-button>
+          <el-button v-if="scope.row.status&0b1" type="info" size="small" icon="el-icon-delete" @click="handleRevertDeleted(scope.row)">revert</el-button>
+          <el-button v-else type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row)">delete</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -195,6 +196,7 @@ import SCENE_ALL from '@/graphqls/sceneAll.graphql'
 import WANDER_ALBUM_ALL from '@/graphqls/wanderAlbumAll.graphql'
 import WANDER_UPDATE from '@/graphqls/wanderUpdate.graphql'
 import WANDER_DELETE from '@/graphqls/wanderDelete.graphql'
+import WANDER_REVERT_DELETED from '@/graphqls/wanderRevertDeleted.graphql'
 import WANDER_CREATE from '@/graphqls/wanderCreate.graphql'
 import USER_BY_ID from '@/graphqls/userById.graphql'
 // import WANDER_ALBUM_BY_ID from '@/graphqls/wanderAlbumById.graphql'
@@ -442,6 +444,25 @@ export default {
       await this.$apollo.mutate({
         // 查询语句
         mutation: WANDER_DELETE,
+        // 参数
+        variables: {
+          id: row.id
+        }
+      })
+      await this.getList()
+      this.listLoading = false
+      this.$notify({
+        title: '成功',
+        message: '删除成功',
+        type: 'success',
+        duration: 2000
+      })
+    },
+    async handleRevertDeleted(row) {
+      this.listLoading = true
+      await this.$apollo.mutate({
+        // 查询语句
+        mutation: WANDER_REVERT_DELETED,
         // 参数
         variables: {
           id: row.id

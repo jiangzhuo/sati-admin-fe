@@ -1,0 +1,6 @@
+mutation admin ($id: String!) {
+  revertDeletedWander(id: $id) {
+    code
+    message
+  }
+}

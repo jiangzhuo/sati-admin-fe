@@ -70,7 +70,8 @@
       <el-table-column :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button type="primary" size="small" icon="el-icon-edit" @click="handleUpdate(scope.row)">Edit</el-button>
-          <el-button type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row)">delete</el-button>
+          <el-button v-if="scope.row.status&0b1" type="info" size="small" icon="el-icon-delete" @click="handleRevertDeleted(scope.row)">revert</el-button>
+          <el-button v-else type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row)">delete</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -164,6 +165,7 @@ import NATURE_ALL from '@/graphqls/natureAll.graphql'
 import SCENE_ALL from '@/graphqls/sceneAll.graphql'
 import NATURE_UPDATE from '@/graphqls/natureUpdate.graphql'
 import NATURE_DELETE from '@/graphqls/natureDelete.graphql'
+import NATURE_REVERT_DELETED from '@/graphqls/natureRevertDeleted.graphql'
 import NATURE_CREATE from '@/graphqls/natureCreate.graphql'
 import USER_BY_ID from '@/graphqls/userById.graphql'
 
@@ -421,6 +423,25 @@ export default {
       await this.$apollo.mutate({
         // 查询语句
         mutation: NATURE_DELETE,
+        // 参数
+        variables: {
+          id: row.id
+        }
+      })
+      await this.getList()
+      this.listLoading = false
+      this.$notify({
+        title: '成功',
+        message: '删除成功',
+        type: 'success',
+        duration: 2000
+      })
+    },
+    async handleRevertDeleted(row) {
+      this.listLoading = true
+      await this.$apollo.mutate({
+        // 查询语句
+        mutation: NATURE_REVERT_DELETED,
         // 参数
         variables: {
           id: row.id
