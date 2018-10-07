@@ -55,7 +55,11 @@
       </el-table-column>
       <el-table-column :label="$t('table.status')" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.status }}</span>
+          <!--<span>{{ scope.row.status }}</span>-->
+          <el-tag v-if="scope.row.status&0b1" type="success">已删除</el-tag>
+          <el-tag v-else type="danger">未删除</el-tag>
+          <el-tag v-if="scope.row.status&0b10" type="success">第二标志位开</el-tag>
+          <el-tag v-else type="danger">第二标志位关</el-tag>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.updateTime')" align="center">
@@ -397,7 +401,7 @@ export default {
             price: parseInt(this.temp.price),
             author: this.$store.getters.id,
             audio: this.temp.audio,
-            status: 3
+            status: this.temp.status
           }
         }
       })
