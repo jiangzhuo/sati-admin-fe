@@ -1,0 +1,21 @@
+query admin($keyword: String!, $page: Int!, $limit: Int!, $sort: String!) {
+  searchUser(keyword: $keyword, page: $page, limit: $limit, sort: $sort) {
+    code
+    message
+    data {
+      id
+      mobile
+      nickname
+      avatar
+      status
+      balance
+      createTime
+      updateTime
+    }
+  }
+  countUser(keyword: $keyword) {
+    code
+    message
+    data
+  }
+}

@@ -112,6 +112,27 @@ export default new Router({
 export const asyncRouterMap = [
   tableRouter,
   {
+    path: '/user',
+    component: Layout,
+    name: 'User',
+    meta: { title: 'user', icon: 'tab' },
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/user/index'),
+        name: 'User',
+        meta: { title: 'user', icon: 'tab' }
+      },
+      {
+        path: 'account/:userId',
+        component: () => import('@/views/user/account'),
+        name: 'UserAccount',
+        meta: { title: 'userAccount', noCache: true },
+        hidden: true
+      }
+    ]
+  },
+  {
     path: '/scene',
     component: Layout,
     children: [

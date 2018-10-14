@@ -11,7 +11,7 @@ const AUTH_TOKEN = 'apollo-token'
 // Config
 const defaultOptions = {
   // You can use `https` for secure connection (recommended in production)
-  httpEndpoint: process.env.VUE_APP_GRAPHQL_HTTP || 'http://localhost:5000/graphql',
+  httpEndpoint: process.env.BASE_API,
   // You can use `wss` for secure connection (recommended in production)
   // Use `null` to disable subscriptions
   // wsEndpoint: process.env.VUE_APP_GRAPHQL_WS || 'ws://localhost:5000/graphql',

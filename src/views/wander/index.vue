@@ -202,7 +202,7 @@ import USER_BY_ID from '@/graphqls/userById.graphql'
 // import WANDER_ALBUM_BY_ID from '@/graphqls/wanderAlbumById.graphql'
 
 export default {
-  name: 'ComplexTable',
+  name: 'WanderTable',
   data() {
     return {
       sceneMap: {},

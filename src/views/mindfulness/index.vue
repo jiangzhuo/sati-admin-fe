@@ -188,7 +188,7 @@ import MINDFULNESS_CREATE from '@/graphqls/mindfulnessCreate.graphql'
 import USER_BY_ID from '@/graphqls/userById.graphql'
 
 export default {
-  name: 'ComplexTable',
+  name: 'MindfulnessTable',
   data() {
     return {
       sceneMap: {},

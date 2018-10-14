@@ -167,7 +167,7 @@ import WANDER_ALBUM_CREATE from '@/graphqls/wanderAlbumCreate.graphql'
 import USER_BY_ID from '@/graphqls/userById.graphql'
 
 export default {
-  name: 'ComplexTable',
+  name: 'WanderAlbumTable',
   data() {
     return {
       sceneMap: {},

@@ -170,7 +170,7 @@ import NATURE_CREATE from '@/graphqls/natureCreate.graphql'
 import USER_BY_ID from '@/graphqls/userById.graphql'
 
 export default {
-  name: 'ComplexTable',
+  name: 'NatureTable',
   data() {
     return {
       sceneMap: {},
