@@ -133,6 +133,18 @@ export const asyncRouterMap = [
     ]
   },
   {
+    path: '/home',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/home/index'),
+        name: 'Home',
+        meta: { title: 'home', icon: 'tab' }
+      }
+    ]
+  },
+  {
     path: '/scene',
     component: Layout,
     children: [

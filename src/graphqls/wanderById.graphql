@@ -1,0 +1,20 @@
+query admin($id: String!) {
+  getWanderById(id: $id) {
+    code
+    message
+    data {
+      background
+      name
+      description
+      scenes
+      price
+      createTime
+      updateTime
+      author
+      audio
+      copy
+      wanderAlbums
+      status
+    }
+  }
+}

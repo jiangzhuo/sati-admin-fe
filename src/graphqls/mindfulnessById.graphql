@@ -1,0 +1,19 @@
+query admin($id: String!) {
+  getMindfulnessById(id: $id) {
+    code
+    message
+    data {
+      background
+      name
+      description
+      scenes
+      price
+      createTime
+      updateTime
+      author
+      audio
+      copy
+      status
+    }
+  }
+}

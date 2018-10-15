@@ -1,0 +1,18 @@
+query admin($id: String!) {
+  getNatureById(id: $id) {
+    code
+    message
+    data {
+      background
+      name
+      description
+      scenes
+      price
+      createTime
+      updateTime
+      author
+      audio
+      status
+    }
+  }
+}

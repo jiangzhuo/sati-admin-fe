@@ -1,0 +1,6 @@
+mutation admin ($id: String!) {
+  deleteHome(id: $id) {
+    code
+    message
+  }
+}

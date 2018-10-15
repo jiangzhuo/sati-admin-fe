@@ -1,0 +1,18 @@
+query admin {
+  getHome {
+    code
+    message
+    data {
+      id
+      position
+      type
+      resourceId
+      background
+      name
+      description
+      createTime
+      updateTime
+      author
+    }
+  }
+}
