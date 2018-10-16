@@ -1,0 +1,10 @@
+query admin ($keyword: String!){
+  searchMindfulness(keyword: $keyword) {
+    code
+    message
+    data {
+      id
+      name
+    }
+  }
+}

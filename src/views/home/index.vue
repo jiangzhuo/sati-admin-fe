@@ -96,6 +96,35 @@
             type="textarea"
             placeholder="请输入内容"/>
         </el-form-item>
+        <el-form-item :label="$t('table.type')" prop="type">
+          <el-select v-model="temp.type" placeholder="请选择" @change="clearResource">
+            <el-option v-for="item in homeOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
+          </el-select>
+        </el-form-item>
+        <el-form-item :label="$t('table.resourceId')" prop="resourceId">
+          <el-select
+            v-model="temp.resourceId"
+            :remote-method="remoteMethod"
+            :loading="resourceOptionsLoading"
+            clearable
+            filterable
+            remote
+            placeholder="请输入关键词">
+            <el-option
+              v-for="resource in resourceOptions"
+              :key="resource.id"
+              :label="resource.name"
+              :value="resource.id"/>
+          </el-select>
+        </el-form-item>
+        <el-cascader
+          v-if="false"
+          v-model="temp.typeAndResourceId"
+          :options="resourceOptions"
+          :props="props"
+          :before-filter="beforeFilter"
+          filterable
+          @active-item-change="handleItemChange"/>
         <el-form-item :label="$t('table.background')" prop="background">
           <el-upload
             :on-success="handleBackgroundSuccess"
@@ -123,9 +152,6 @@
         <!--<el-form-item>-->
         <!--<el-button @click="addProductId">新增productId</el-button>-->
         <!--</el-form-item>-->
-        <el-form-item :label="$t('table.price')" prop="name">
-          <el-input v-model="temp.price"/>
-        </el-form-item>
         <el-form-item v-show="false" :label="$t('table.author')" prop="author">
           <el-input v-model="temp.author"/>
         </el-form-item>
@@ -170,17 +196,40 @@ import MINDFULNESS_BY_ID from '@/graphqls/mindfulnessById.graphql'
 import NATURE_BY_ID from '@/graphqls/natureById.graphql'
 import WANDER_BY_ID from '@/graphqls/wanderById.graphql'
 import WANDER_ALBUM_BY_ID from '@/graphqls/wanderAlbumById.graphql'
+import MINDFULNESS_SEARCH from '@/graphqls/mindfulnessSearch.graphql'
+import NATURE_SEARCH from '@/graphqls/natureSearch.graphql'
+import WANDER_SEARCH from '@/graphqls/wanderSearch.graphql'
+import WANDER_ALBUM_SEARCH from '@/graphqls/wanderAlbumSearch.graphql'
 
 export default {
   name: 'HomeTable',
   data() {
     return {
+      homeOptions: [
+        { key: 'mindfulness', display_name: '正态' },
+        { key: 'nature', display_name: '自然' },
+        { key: 'wander', display_name: '漫步' },
+        { key: 'wanderAlbum', display_name: '漫步专辑' },
+        { key: 'shop', display_name: '商城(暂不支持)' }
+      ],
       sceneMap: {},
       userMap: {},
       resourceMap: {},
+      resourceOptions: [
+        { id: 'mindfulness', name: '正态', children: [] },
+        { id: 'nature', name: '自然', children: [] },
+        { id: 'wander', name: '漫步', children: [] },
+        { id: 'wanderAlbum', name: '漫步专辑', children: [] },
+        { id: 'shop', name: '商城(暂不支持)', children: [] }
+      ],
+      props: {
+        value: 'id',
+        label: 'name'
+      },
       homeList: [],
       listLoading: true,
-      temp: {},
+      resourceOptionsLoading: true,
+      temp: { resourceId: '' },
       tempAudioFileList: [],
       tempBackgroundFileList: [],
       dialogStatus: 'create',
@@ -192,15 +241,73 @@ export default {
     await this.getList()
   },
   methods: {
-    // removeProductId(item) {
-    //   const index = this.temp.productId.indexOf(item)
-    //   if (index !== -1) {
-    //     this.temp.productId.splice(index, 1)
-    //   }
+    // beforeFilter(val) {
+    //   console.log(val)
     // },
-    // addProductId() {
-    //   this.temp.productId.push({ value: '' })f
+    // handleItemChange(val) {
+    //   console.log('active item:', val)
+    //   setTimeout(_ => {
+    //     if (val.indexOf('mindfulness') > -1 && !this.resourceOptions[0].children.length) {
+    //       this.resourceOptions[0].children = [{
+    //         id: 'najing',
+    //         name: '南京'
+    //       }]
+    //     } else if (val.indexOf('nature') > -1 && !this.resourceOptions[1].children.length) {
+    //       this.resourceOptions[1].children = [{
+    //         id: 'hangzhou',
+    //         name: '杭州'
+    //       }]
+    //     }
+    //   }, 300)
     // },
+    clearResource() {
+      console.log(11111)
+      this.temp.resourceId = null
+      // this.resourceId = null
+    },
+    async remoteMethod(keyword) {
+      console.log(keyword)
+      if (keyword !== '') {
+        this.resourceOptionsLoading = true
+        let query
+        let resultField
+        if (this.temp.type === 'mindfulness') {
+          query = MINDFULNESS_SEARCH
+          resultField = 'searchMindfulness'
+        } else if (this.temp.type === 'nature') {
+          query = NATURE_SEARCH
+          resultField = 'searchNature'
+        } else if (this.temp.type === 'wander') {
+          query = WANDER_SEARCH
+          resultField = 'searchWander'
+        } else if (this.temp.type === 'wanderAlbum') {
+          query = WANDER_ALBUM_SEARCH
+          resultField = 'searchWanderAlbum'
+        } else {
+          this.resourceOptions = []
+          this.resourceOptionsLoading = false
+          return
+        }
+        // setTimeout(() => {
+        //   this.resourceOptionsLoading = false
+        //   this.resourceOptions = [{ 'id': '南拳妈妈龙虾盖浇饭', 'name': '普陀区金沙江路1699号鑫乐惠美食广场A13' }]
+        // }, 200)
+
+        const result = await this.$apollo.query({
+          // 查询语句
+          query: query,
+          // 参数
+          variables: {
+            keyword: keyword
+          }
+        })
+        this.resourceOptions = result.data[resultField].data
+        this.resourceOptionsLoading = false
+      } else {
+        this.resourceOptions = []
+        this.resourceOptionsLoading = false
+      }
+    },
     async getScene() {
       const result = await this.$apollo.query({ query: SCENE_ALL })
       result.data.getScene.data.forEach((scene) => {
@@ -253,6 +360,9 @@ export default {
       } else if (type === 'wanderAlbum') {
         query = WANDER_ALBUM_BY_ID
         resultField = 'getWanderAlbumById'
+      } else {
+        this.resourceOptions = []
+        return
       }
       const result = await this.$apollo.query({
         // 查询语句
@@ -291,7 +401,7 @@ export default {
       this.listLoading = false
     },
     resetTemp() {
-      this.temp = {}
+      this.temp = { resourceId: '' }
       this.tempAudioFileList = []
       this.tempBackgroundFileList = []
     },
@@ -301,16 +411,26 @@ export default {
       this.dialogFormVisible = true
     },
     async createData() {
-      console.log(this.temp)
+      // this.temp.type = this.temp.typeAndResourceId[0]
+      // this.temp.resourceId = this.temp.typeAndResourceId[1]
       this.temp.author = this.$store.getters.id
-      this.temp.price = parseInt(this.temp.price)
+      this.temp.position = 1
+      console.log(this.temp)
       // this.temp.productId = this.temp.productId.map((pidValue) => pidValue.value)
       const data = await this.$apollo.mutate({
         // 查询语句
         mutation: HOME_CREATE,
         // 参数
         variables: {
-          createData: this.temp
+          createData: {
+            type: this.temp.type,
+            resourceId: this.temp.resourceId,
+            background: this.temp.background,
+            name: this.temp.name,
+            description: this.temp.description,
+            author: this.temp.author,
+            position: this.temp.position
+          }
         }
       })
 

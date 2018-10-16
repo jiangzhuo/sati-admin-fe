@@ -1,0 +1,10 @@
+query admin ($keyword: String!){
+  searchWanderAlbum(keyword: $keyword) {
+    code
+    message
+    data {
+      id
+      name
+    }
+  }
+}
