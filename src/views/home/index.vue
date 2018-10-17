@@ -65,6 +65,11 @@
           <!--<a href="index.vue">{{ userMap[scope.row.author]?userMap[scope.row.author].nickname:scope.row.author }}</a>-->
         </template>
       </el-table-column>
+      <el-table-column :label="$t('table.position')" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.position }}</span>
+        </template>
+      </el-table-column>
       <el-table-column :label="$t('table.createTime')" align="center">
         <template slot-scope="scope">
           <span>{{ new Date(scope.row.createTime*1000) }}</span>
@@ -82,7 +87,14 @@
           <!--<el-button v-else type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row)">delete</el-button>-->
         </template>
       </el-table-column>
+      <el-table-column v-if="false" align="center" label="Drag" width="80">
+        <template slot-scope="scope">
+          <svg-icon class="drag-handler" icon-class="drag"/>
+        </template>
+      </el-table-column>
     </el-table>
+    <div v-if="false" class="show-d">{{ $t('table.dragTips1') }} : &nbsp; {{ oldList }}</div>
+    <div v-if="false" class="show-d">{{ $t('table.dragTips2') }} : {{ newList }}</div>
 
     <el-dialog :title="dialogStatus" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
@@ -155,11 +167,14 @@
         <el-form-item v-show="false" :label="$t('table.author')" prop="author">
           <el-input v-model="temp.author"/>
         </el-form-item>
+        <el-form-item :label="$t('table.position')" prop="author">
+          <el-input-number v-model="temp.position" :min="0" :max="10"/>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
         <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">{{ $t('table.confirm') }}</el-button>
-        <el-button v-else type="primary" @click="updateData">{{ $t('table.confirm') }}</el-button>
+        <el-button v-else type="primary" @click="updateData">{{ $t('table.update') }}</el-button>
       </div>
     </el-dialog>
 
@@ -178,6 +193,11 @@
     margin-right: 0;
     margin-bottom: 0;
     width: 50%;
+  }
+  .sortable-ghost{
+    opacity: .8;
+    color: #fff!important;
+    background: #42b983!important;
   }
 </style>
 
@@ -200,6 +220,7 @@ import MINDFULNESS_SEARCH from '@/graphqls/mindfulnessSearch.graphql'
 import NATURE_SEARCH from '@/graphqls/natureSearch.graphql'
 import WANDER_SEARCH from '@/graphqls/wanderSearch.graphql'
 import WANDER_ALBUM_SEARCH from '@/graphqls/wanderAlbumSearch.graphql'
+// import Sortable from 'sortablejs'
 
 export default {
   name: 'HomeTable',
@@ -215,21 +236,18 @@ export default {
       sceneMap: {},
       userMap: {},
       resourceMap: {},
-      resourceOptions: [
-        { id: 'mindfulness', name: '正态', children: [] },
-        { id: 'nature', name: '自然', children: [] },
-        { id: 'wander', name: '漫步', children: [] },
-        { id: 'wanderAlbum', name: '漫步专辑', children: [] },
-        { id: 'shop', name: '商城(暂不支持)', children: [] }
-      ],
+      resourceOptions: [],
       props: {
         value: 'id',
         label: 'name'
       },
       homeList: [],
+      sortable: null,
+      oldList: [],
+      newList: [],
       listLoading: true,
       resourceOptionsLoading: true,
-      temp: { resourceId: '' },
+      temp: { resourceId: '', position: 0 },
       tempAudioFileList: [],
       tempBackgroundFileList: [],
       dialogStatus: 'create',
@@ -241,6 +259,25 @@ export default {
     await this.getList()
   },
   methods: {
+    // setSort() {
+    //   const el = document.querySelectorAll('.el-table__body-wrapper > table > tbody')[0]
+    //   this.sortable = Sortable.create(el, {
+    //     ghostClass: 'sortable-ghost', // Class name for the drop placeholder,
+    //     setData: function(dataTransfer) {
+    //       dataTransfer.setData('Text', '')
+    //       // to avoid Firefox bug
+    //       // Detail see : https://github.com/RubaXa/Sortable/issues/1012
+    //     },
+    //     onEnd: evt => {
+    //       const targetRow = this.homeList.splice(evt.oldIndex, 1)[0]
+    //       this.homeList.splice(evt.newIndex, 0, targetRow)
+    //
+    //       // for show the changes, you can delete in you code
+    //       const tempIndex = this.newList.splice(evt.oldIndex, 1)[0]
+    //       this.newList.splice(evt.newIndex, 0, tempIndex)
+    //     }
+    //   })
+    // },
     // beforeFilter(val) {
     //   console.log(val)
     // },
@@ -342,8 +379,8 @@ export default {
           id: userId
         }
       })
-      console.log(result)
       this.userMap[userId] = result.data.getUserById.data
+      console.log(this.userMap)
     },
     async getResource(type, resourceId) {
       let query
@@ -373,6 +410,9 @@ export default {
         }
       })
       this.resourceMap[resourceId] = result.data[resultField].data
+      // const index = _.findIndex(this.resourceOptions, { id: type })
+      // this.resourceOptions[index].children.push({ id: resourceId, name: this.resourceMap[resourceId].name })
+      // console.log(this.resourceOptions)
       await this.getUser(this.resourceMap[resourceId].author)
     },
     async getList() {
@@ -399,9 +439,12 @@ export default {
       console.log(this.resourceMap)
       this.homeList = result.data.getHome.data
       this.listLoading = false
+      // this.$nextTick(() => {
+      //   this.setSort()
+      // })
     },
     resetTemp() {
-      this.temp = { resourceId: '' }
+      this.temp = { resourceId: '', position: 0 }
       this.tempAudioFileList = []
       this.tempBackgroundFileList = []
     },
@@ -414,7 +457,6 @@ export default {
       // this.temp.type = this.temp.typeAndResourceId[0]
       // this.temp.resourceId = this.temp.typeAndResourceId[1]
       this.temp.author = this.$store.getters.id
-      this.temp.position = 1
       console.log(this.temp)
       // this.temp.productId = this.temp.productId.map((pidValue) => pidValue.value)
       const data = await this.$apollo.mutate({
@@ -435,16 +477,6 @@ export default {
       })
 
       console.log('getList')
-      // const result = await this.$apollo.query({
-      //   // 查询语句
-      //   query: HOME_ALL,
-      //   // 参数
-      //   variables: {
-      //     first: 20
-      //   },
-      //   fetchPolicy: 'network-only' // 只从网络获取
-      // })
-      // this.homeList = result.data.getHome.data
       await this.getList()
 
       if (data.data.createHome.code !== 200) {
@@ -468,6 +500,7 @@ export default {
     handleUpdate(row) {
       this.resetTemp()
       this.temp = _.cloneDeep(row)
+      this.resourceOptions = [{ id: row.resourceId, name: this.resourceMap[row.resourceId].name }]
       // this.temp.productId = this.temp.productId.map((pid)=>{ return { value: pid } })
       this.tempBackgroundFileList = row.background ? [{ url: row.background }] : []
       this.dialogStatus = 'update'
@@ -475,9 +508,10 @@ export default {
     },
     async updateData() {
       // this.temp = _.cloneDeep(this.temp)
-      // this.temp.author = this.$store.getters.id
+      this.temp.author = this.$store.getters.id
       // this.temp.productId = this.temp.productId.map((pidValue) => pidValue.value)
       // console.log(this.temp)
+      console.log(this.temp.position)
       await this.$apollo.mutate({
         // 查询语句
         mutation: HOME_UPDATE,
@@ -485,13 +519,13 @@ export default {
         variables: {
           id: this.temp.id,
           updateData: {
+            type: this.temp.type,
+            resourceId: this.temp.resourceId,
             background: this.temp.background,
             name: this.temp.name,
             description: this.temp.description,
-            // productId: this.temp.productId.map((pidValue) => pidValue.value),
-            price: parseInt(this.temp.price),
-            author: this.$store.getters.id,
-            status: this.temp.status
+            author: this.temp.author,
+            position: this.temp.position
           }
         }
       })
