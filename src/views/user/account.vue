@@ -82,8 +82,8 @@ export default {
       accountTypeOptions: [
         { key: '', display_name: '全部' },
         { key: 'deposit', display_name: '充值' },
-        { key: 'mindfulness', display_name: '正态' },
-        { key: 'mindfulnessRollback', display_name: '正态回滚' },
+        { key: 'mindfulness', display_name: '正念' },
+        { key: 'mindfulnessRollback', display_name: '正念回滚' },
         { key: 'nature', display_name: '自然' },
         { key: 'natureRollback', display_name: '自然回滚' },
         { key: 'wander', display_name: '漫步' },

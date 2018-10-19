@@ -227,7 +227,7 @@ export default {
   data() {
     return {
       homeOptions: [
-        { key: 'mindfulness', display_name: '正态' },
+        { key: 'mindfulness', display_name: '正念' },
         { key: 'nature', display_name: '自然' },
         { key: 'wander', display_name: '漫步' },
         { key: 'wanderAlbum', display_name: '漫步专辑' },
@@ -459,6 +459,9 @@ export default {
       // this.temp.resourceId = this.temp.typeAndResourceId[1]
       this.temp.author = this.$store.getters.id
       console.log(this.temp)
+      if (this.temp.type === 'shop') {
+        this.temp.resourceId = '000000000000000000000000'
+      }
       // this.temp.productId = this.temp.productId.map((pidValue) => pidValue.value)
       const data = await this.$apollo.mutate({
         // 查询语句
@@ -513,6 +516,9 @@ export default {
       // this.temp.productId = this.temp.productId.map((pidValue) => pidValue.value)
       // console.log(this.temp)
       console.log(this.temp.position)
+      if (this.temp.type === 'shop') {
+        this.temp.resourceId = '000000000000000000000000'
+      }
       await this.$apollo.mutate({
         // 查询语句
         mutation: HOME_UPDATE,
