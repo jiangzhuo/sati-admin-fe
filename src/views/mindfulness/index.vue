@@ -108,9 +108,9 @@
             :on-exceed="handleBackgroundExceed"
             :limit="1"
             :file-list="tempBackgroundFileList"
+            :action="uploadBackgroundAPI"
             accept="image/*"
-            list-type="picture"
-            action="http://localhost:5000/uploadBackground/">
+            list-type="picture">
             <el-button size="small" type="primary">点击上传</el-button>
             <div slot="tip" class="el-upload__tip">只能上传图像文件，且不超过20M</div>
           </el-upload>
@@ -146,9 +146,9 @@
             :on-exceed="handleAudioExceed"
             :limit="1"
             :file-list="tempAudioFileList"
+            :action="uploadAudioAPI"
             accept="audio/*"
-            list-type="text"
-            action="http://localhost:5000/uploadBackground/">
+            list-type="text">
             <el-button size="small" type="primary">点击上传</el-button>
             <div slot="tip" class="el-upload__tip">只能上传音频文件，且不超过20M</div>
           </el-upload>
@@ -194,6 +194,8 @@ export default {
       sceneMap: {},
       sceneOptions: [],
       userMap: {},
+      uploadBackgroundAPI: process.env.BASE_API + '/uploadBackground/',
+      uploadAudioAPI: process.env.BASE_API + '/uploadBackground/',
       mindfulnessList: [
         // {
         //   'id': '5ba0db5b18b0d02bbf55b832',

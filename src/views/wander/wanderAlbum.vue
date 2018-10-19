@@ -105,7 +105,7 @@
             :file-list="tempBackgroundFileList"
             accept="image/*"
             list-type="picture"
-            action="http://localhost:5000/uploadBackground/">
+            action="uploadBackgroundAPI">
             <el-button size="small" type="primary">点击上传</el-button>
             <div slot="tip" class="el-upload__tip">只能上传图像文件，且不超过20M</div>
           </el-upload>
@@ -170,6 +170,8 @@ export default {
   name: 'WanderAlbumTable',
   data() {
     return {
+      uploadBackgroundAPI: process.env.BASE_API + '/uploadBackground/',
+      uploadAudioAPI: process.env.BASE_API + '/uploadBackground/',
       sceneMap: {},
       sceneOptions: [],
       userMap: {},
