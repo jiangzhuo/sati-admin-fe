@@ -12,6 +12,7 @@ mutation admin($createData: createNatureRequest!) {
       updateTime
       author
       audio
+      copy
       status
     }
   }

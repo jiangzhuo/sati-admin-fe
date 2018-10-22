@@ -53,6 +53,17 @@
           <!--<a href="index.vue">{{ userMap[scope.row.author]?userMap[scope.row.author].nickname:scope.row.author }}</a>-->
         </template>
       </el-table-column>
+      <el-table-column :label="$t('table.copy')" align="center">
+        <template slot-scope="scope">
+          <el-popover
+            :content="scope.row.copy"
+            :title="('table.copy')"
+            placement="top"
+            trigger="hover">
+            <span slot="reference">{{ scope.row.copy.substring(0,20) }}</span>
+          </el-popover>
+        </template>
+      </el-table-column>
       <el-table-column :label="$t('table.status')" align="center">
         <template slot-scope="scope">
           <!--<span>{{ scope.row.status }}</span>-->
@@ -97,7 +108,7 @@
             :on-exceed="handleBackgroundExceed"
             :limit="1"
             :file-list="tempBackgroundFileList"
-            :action="uploadBackgroudAPI"
+            :action="uploadBackgroundAPI"
             accept="image/*"
             list-type="picture">
             <el-button size="small" type="primary">点击上传</el-button>
@@ -144,6 +155,13 @@
         </el-form-item>
         <el-form-item v-show="false" :label="$t('table.author')" prop="author">
           <el-input v-model="temp.author"/>
+        </el-form-item>
+        <el-form-item :label="$t('table.copy')" prop="copy">
+          <el-input
+            :autosize="{ minRows: 2, maxRows: 4}"
+            v-model="temp.copy"
+            type="textarea"
+            placeholder="请输入内容"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -405,6 +423,7 @@ export default {
             price: parseInt(this.temp.price),
             author: this.$store.getters.id,
             audio: this.temp.audio,
+            copy: this.temp.copy,
             status: this.temp.status
           }
         }
@@ -453,7 +472,7 @@ export default {
       this.listLoading = false
       this.$notify({
         title: '成功',
-        message: '删除成功',
+        message: '恢复成功',
         type: 'success',
         duration: 2000
       })

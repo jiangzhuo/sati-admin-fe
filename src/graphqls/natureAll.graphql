@@ -13,6 +13,7 @@ query admin {
       updateTime
       author
       audio
+      copy
       status
     }
   }

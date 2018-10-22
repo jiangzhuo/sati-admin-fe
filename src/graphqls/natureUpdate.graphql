@@ -13,6 +13,7 @@ mutation admin($id: String!, $updateData: updateNatureRequest!) {
       updateTime
       author
       audio
+      copy
       status
     }
   }

@@ -12,6 +12,7 @@ query admin($id: String!) {
       updateTime
       author
       audio
+      copy
       status
     }
   }
