@@ -135,31 +135,39 @@ export default {
           const password = this.loginForm.password.trim()
           this.$apollo.query({ query: USER_LOGIN, variables: { mobile, password }}).then((loginResult) => {
             const data = loginResult.data
-            this.$store.dispatch('LoginByUsername', data.loginByMobileAndPassword.data.accessToken).then(() => {
-              this.loading = false
-              onLogin(this.$apollo.provider.defaultClient, getToken()).then(() => {
-                // this.$apollo.query({ query: USER_CURRENT }).then((currentUserResult) => {
-                //   const data = currentUserResult.data
-                //   this.$store.dispatch('GetUserInfo', data.getCurrentUser).then(res => { // 拉取user_info
-                //     const roles = res.data.roles // note: roles must be a array! such as: ['editor','develop']
-                //     this.$store.dispatch('GenerateRoutes', { roles }).then(() => { // 根据roles权限生成可访问的路由表
-                //       this.$router.addRoutes(this.$store.getters.addRouters) // 动态添加可访问路由表
-                //     })
-                //     this.$router.push({ path: this.redirect || '/' })
-                //   }).catch((err) => {
-                //     this.$store.dispatch('FedLogOut').then(() => {
-                //       console.log(err)
-                //       // Message.error(err || 'Verification failed, please login again')
-                //       // next({ path: '/' })
-                //     })
-                //   })
-                // })
+            console.log(loginResult)
+            if (data.loginByMobileAndPassword.code !== 200) {
+              this.$store.dispatch('FedLogOut').then(() => {
+                this.$message.error(data.loginByMobileAndPassword.message)
                 this.loading = false
-                this.$router.push({ path: this.redirect || '/' })
               })
-            }).catch(() => {
-              this.loading = false
-            })
+            } else {
+              this.$store.dispatch('LoginByUsername', data.loginByMobileAndPassword.data.accessToken).then(() => {
+                this.loading = false
+                onLogin(this.$apollo.provider.defaultClient, getToken()).then(() => {
+                  // this.$apollo.query({ query: USER_CURRENT }).then((currentUserResult) => {
+                  //   const data = currentUserResult.data
+                  //   this.$store.dispatch('GetUserInfo', data.getCurrentUser).then(res => { // 拉取user_info
+                  //     const roles = res.data.roles // note: roles must be a array! such as: ['editor','develop']
+                  //     this.$store.dispatch('GenerateRoutes', { roles }).then(() => { // 根据roles权限生成可访问的路由表
+                  //       this.$router.addRoutes(this.$store.getters.addRouters) // 动态添加可访问路由表
+                  //     })
+                  //     this.$router.push({ path: this.redirect || '/' })
+                  //   }).catch((err) => {
+                  //     this.$store.dispatch('FedLogOut').then(() => {
+                  //       console.log(err)
+                  //       // Message.error(err || 'Verification failed, please login again')
+                  //       // next({ path: '/' })
+                  //     })
+                  //   })
+                  // })
+                  this.loading = false
+                  this.$router.push({ path: this.redirect || '/' })
+                })
+              }).catch(() => {
+                this.loading = false
+              })
+            }
           })
           // this.$store.dispatch('LoginByUsername', this.loginForm).then(() => {
         } else {
