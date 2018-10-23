@@ -115,7 +115,7 @@ export const asyncRouterMap = [
     path: '/user',
     component: Layout,
     name: 'User',
-    meta: { title: 'user', icon: 'tab' },
+    meta: { title: 'user', icon: 'tab', roles: ['admin'] },
     children: [
       {
         path: 'index',
@@ -135,6 +135,7 @@ export const asyncRouterMap = [
   {
     path: '/home',
     component: Layout,
+    meta: { roles: ['admin', 'editor'] },
     children: [
       {
         path: 'index',
@@ -147,6 +148,7 @@ export const asyncRouterMap = [
   {
     path: '/scene',
     component: Layout,
+    meta: { roles: ['admin', 'editor'] },
     children: [
       {
         path: 'index',
@@ -159,6 +161,7 @@ export const asyncRouterMap = [
   {
     path: '/mindfulness',
     component: Layout,
+    meta: { roles: ['admin', 'editor'] },
     children: [
       {
         path: 'index',
@@ -171,6 +174,7 @@ export const asyncRouterMap = [
   {
     path: '/nature',
     component: Layout,
+    meta: { roles: ['admin', 'editor'] },
     children: [
       {
         path: 'index',
@@ -185,7 +189,8 @@ export const asyncRouterMap = [
     name: 'Wander',
     meta: {
       title: 'Wander',
-      icon: 'tab'
+      icon: 'tab',
+      roles: ['admin', 'editor']
     },
     component: Layout,
     children: [

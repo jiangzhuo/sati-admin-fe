@@ -80,7 +80,22 @@ const user = {
           reject('error')
         }
         const data = response.data
-        data.roles = ['admin']
+        const ROLE_MAP = {
+          sadmin: 0b1,
+          admin: 0b10,
+          editor: 0b100
+        }
+        if (data.role === 0) {
+          reject('no permission')
+        }
+        data.roles = []
+        Object.entries(ROLE_MAP).forEach(([key, value]) => {
+          console.log(key, value)
+          if (data.role & value) {
+            data.roles.push(key)
+          }
+        })
+        // data.roles = ['admin']
 
         if (data.roles && data.roles.length > 0) { // 验证返回的roles是否是一个非空数组
           commit('SET_ROLES', data.roles)

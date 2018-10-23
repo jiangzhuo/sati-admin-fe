@@ -8,6 +8,7 @@ query admin{
       nickname
       avatar
       status
+      role
       updateTime
     }
   }
