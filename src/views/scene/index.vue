@@ -2,18 +2,18 @@
   <div class="app-container">
 
     <div class="filter-container">
-      <el-button style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">Add</el-button>
+      <el-button style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('scene.add') }}</el-button>
     </div>
 
     <el-table v-loading="this.$apollo.queries.sceneList.loading" :data="sceneList" border fit highlight-current-row style="width: 100%">
 
-      <el-table-column align="center" label="ID" width="250">
+      <el-table-column :label="$t('scene.id')" align="center" width="250">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="Name">
+      <el-table-column :label="$t('scene.name')">
         <template slot-scope="scope">
           <template v-if="scope.row.edit">
             <el-input v-model="scope.row.name" class="edit-input" size="small"/>
@@ -22,7 +22,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Actions">
+      <el-table-column :label="$t('scene.actoions')" align="center">
         <template slot-scope="scope">
           <el-button v-if="scope.row.edit" type="success" size="small" icon="el-icon-circle-check-outline" @click="confirmEdit(scope.row)">Ok</el-button>
           <el-button v-if="scope.row.edit" type="warning" size="small" icon="el-icon-refresh" @click="cancelEdit(scope.row)">cancel</el-button>
@@ -35,13 +35,13 @@
 
     <el-dialog :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item :label="$t('table.name')" prop="name">
+        <el-form-item :label="$t('scene.name')" prop="name">
           <el-input v-model="temp.name"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
-        <el-button type="primary" @click="createEdit">{{ $t('table.confirm') }}</el-button>
+        <el-button @click="dialogFormVisible = false">{{ $t('scene.cancel') }}</el-button>
+        <el-button type="primary" @click="createEdit">{{ $t('scene.confirm') }}</el-button>
       </div>
     </el-dialog>
   </div>

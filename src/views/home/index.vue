@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-button style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">Add</el-button>
+      <el-button style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('home.add') }}</el-button>
     </div>
 
     <el-table v-loading="listLoading" ref="dataTable" :data="homeList" border fit highlight-current-row style="width: 100%;">
@@ -29,58 +29,58 @@
           </el-form>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.id')" align="center">
+      <el-table-column :label="$t('home.id')" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.type')" align="center">
+      <el-table-column :label="$t('home.type')" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.type }}</span>
         </template>
       </el-table-column>
-      <el-table-column v-if="false" :label="$t('table.resourceId')" align="center">
+      <el-table-column v-if="false" :label="$t('home.resourceId')" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.resourceId }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.name')" align="center">
+      <el-table-column :label="$t('home.name')" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.description')" align="center">
+      <el-table-column :label="$t('home.description')" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.description }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.background')" align="center">
+      <el-table-column :label="$t('home.background')" align="center">
         <template slot-scope="scope">
           <a href="https://developer.mozilla.org/"><img :src="scope.row.background" style="width: auto; height: auto; max-width: 100%; max-height: 100%;"></a>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.author')" align="center">
+      <el-table-column :label="$t('home.author')" align="center">
         <template slot-scope="scope">
           <a :href="'user/userInfo?userId='+scope.row.author" target="_blank">{{ userMap[scope.row.author]?userMap[scope.row.author].nickname:scope.row.author }}</a>
           <!--<a href="index.vue">{{ userMap[scope.row.author]?userMap[scope.row.author].nickname:scope.row.author }}</a>-->
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.position')" align="center">
+      <el-table-column :label="$t('home.position')" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.position }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.createTime')" align="center">
+      <el-table-column :label="$t('home.createTime')" align="center">
         <template slot-scope="scope">
           <span>{{ new Date(scope.row.createTime*1000) }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.updateTime')" align="center">
+      <el-table-column :label="$t('home.updateTime')" align="center">
         <template slot-scope="scope">
           <span>{{ new Date(scope.row.updateTime*1000) }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
+      <el-table-column :label="$t('home.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button type="primary" size="small" icon="el-icon-edit" @click="handleUpdate(scope.row)">Edit</el-button>
           <!--<el-button v-if="scope.row.status&0b1" type="info" size="small" icon="el-icon-delete" @click="handleRevertDeleted(scope.row)">revert</el-button>-->
@@ -93,27 +93,27 @@
         </template>
       </el-table-column>
     </el-table>
-    <div v-if="false" class="show-d">{{ $t('table.dragTips1') }} : &nbsp; {{ oldList }}</div>
-    <div v-if="false" class="show-d">{{ $t('table.dragTips2') }} : {{ newList }}</div>
+    <div v-if="false" class="show-d">{{ $t('home.dragTips1') }} : &nbsp; {{ oldList }}</div>
+    <div v-if="false" class="show-d">{{ $t('home.dragTips2') }} : {{ newList }}</div>
 
     <el-dialog :title="dialogStatus" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item :label="$t('table.name')" prop="name">
+        <el-form-item :label="$t('home.name')" prop="name">
           <el-input v-model="temp.name"/>
         </el-form-item>
-        <el-form-item :label="$t('table.description')" prop="description">
+        <el-form-item :label="$t('home.description')" prop="description">
           <el-input
             :autosize="{ minRows: 2, maxRows: 4}"
             v-model="temp.description"
             type="textarea"
             placeholder="请输入内容"/>
         </el-form-item>
-        <el-form-item :label="$t('table.type')" prop="type">
+        <el-form-item :label="$t('home.type')" prop="type">
           <el-select v-model="temp.type" placeholder="请选择" @change="clearResource">
             <el-option v-for="item in homeOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
           </el-select>
         </el-form-item>
-        <el-form-item :label="$t('table.resourceId')" prop="resourceId">
+        <el-form-item :label="$t('home.resourceId')" prop="resourceId">
           <el-select
             v-model="temp.resourceId"
             :remote-method="remoteMethod"
@@ -137,7 +137,7 @@
           :before-filter="beforeFilter"
           filterable
           @active-item-change="handleItemChange"/>
-        <el-form-item :label="$t('table.background')" prop="background">
+        <el-form-item :label="$t('home.background')" prop="background">
           <el-upload
             :on-success="handleBackgroundSuccess"
             :before-upload="beforeBackgroundUpload"
@@ -155,7 +155,7 @@
         </el-form-item>
         <!--<el-form-item-->
         <!--v-for="(item, index) in temp.productId"-->
-        <!--:label="$t('table.productId')"-->
+        <!--:label="$t('home.productId')"-->
         <!--:key="'productId.' + index"-->
         <!--prop="productId">-->
         <!--<el-input v-model="item.value"/>-->
@@ -164,17 +164,17 @@
         <!--<el-form-item>-->
         <!--<el-button @click="addProductId">新增productId</el-button>-->
         <!--</el-form-item>-->
-        <el-form-item v-show="false" :label="$t('table.author')" prop="author">
+        <el-form-item v-show="false" :label="$t('home.author')" prop="author">
           <el-input v-model="temp.author"/>
         </el-form-item>
-        <el-form-item :label="$t('table.position')" prop="author">
+        <el-form-item :label="$t('home.position')" prop="author">
           <el-input-number v-model="temp.position" :min="0" :max="10"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
-        <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">{{ $t('table.confirm') }}</el-button>
-        <el-button v-else type="primary" @click="updateData">{{ $t('table.update') }}</el-button>
+        <el-button @click="dialogFormVisible = false">{{ $t('home.cancel') }}</el-button>
+        <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">{{ $t('home.confirm') }}</el-button>
+        <el-button v-else type="primary" @click="updateData">{{ $t('home.update') }}</el-button>
       </div>
     </el-dialog>
 
@@ -336,10 +336,12 @@ export default {
           query: query,
           // 参数
           variables: {
-            keyword: keyword
+            keyword: keyword,
+            from: 0,
+            size: 10
           }
         })
-        this.resourceOptions = result.data[resultField].data
+        this.resourceOptions = result.data[resultField].data.data
         this.resourceOptionsLoading = false
       } else {
         this.resourceOptions = []

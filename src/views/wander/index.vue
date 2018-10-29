@@ -1,21 +1,21 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-button style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">Add</el-button>
+      <el-button style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('wander.add') }}</el-button>
     </div>
 
     <el-table v-loading="listLoading" ref="dataTable" :data="wanderList" border fit highlight-current-row style="width: 100%;">
-      <el-table-column :label="$t('table.id')" align="center">
+      <el-table-column :label="$t('wander.id')" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.name')" align="center">
+      <el-table-column :label="$t('wander.name')" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.description')" align="center">
+      <el-table-column :label="$t('wander.description')" align="center">
         <template slot-scope="scope">
           <el-popover
             :content="scope.row.description"
@@ -26,33 +26,33 @@
           </el-popover>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.background')" align="center">
+      <el-table-column :label="$t('wander.background')" align="center">
         <template slot-scope="scope">
           <a href="https://developer.mozilla.org/"><img :src="scope.row.background" style="width: auto; height: auto; max-width: 100%; max-height: 100%;"></a>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.price')" align="center">
+      <el-table-column :label="$t('wander.price')" align="center">
         <template slot-scope="scope">
           <!--<el-tag v-for="pid in scope.row.productId" :key="pid">{{ pid }}</el-tag>-->
           <span>{{ scope.row.price }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.scenes')" align="center">
+      <el-table-column :label="$t('wander.scenes')" align="center">
         <template slot-scope="scope">
           <el-tag v-for="scene in scope.row.scenes" :key="scene">{{ sceneMap[scene].name }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.audio')" align="center">
+      <el-table-column :label="$t('wander.audio')" align="center">
         <template slot-scope="scope">
           <audio :src="scope.row.audio" controls="controls"/>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.author')" align="center">
+      <el-table-column :label="$t('wander.author')" align="center">
         <template slot-scope="scope">
           <a :href="'user/userInfo?userId='+scope.row.author" target="_blank">{{ userMap[scope.row.author]?userMap[scope.row.author].nickname:scope.row.author }}</a>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.copy')" align="center">
+      <el-table-column :label="$t('wander.copy')" align="center">
         <template slot-scope="scope">
           <el-popover
             :content="scope.row.copy"
@@ -63,12 +63,12 @@
           </el-popover>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.wanderAlbums')" align="center">
+      <el-table-column :label="$t('wander.wanderAlbums')" align="center">
         <template slot-scope="scope">
           <el-tag v-for="wanderAlbum in scope.row.wanderAlbums" :key="wanderAlbum">{{ wanderAlbumMap[wanderAlbum].name }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.status')" align="center">
+      <el-table-column :label="$t('wander.status')" align="center">
         <template slot-scope="scope">
           <!--<span>{{ scope.row.status }}</span>-->
           <el-tag v-if="scope.row.status&0b1" type="success">已删除</el-tag>
@@ -77,33 +77,33 @@
           <el-tag v-else type="danger">第二标志位关</el-tag>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.updateTime')" align="center">
+      <el-table-column :label="$t('wander.updateTime')" align="center">
         <template slot-scope="scope">
           <span>{{ new Date(scope.row.updateTime*1000) }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
+      <el-table-column :label="$t('wander.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button type="primary" size="small" icon="el-icon-edit" @click="handleUpdate(scope.row)">Edit</el-button>
-          <el-button v-if="scope.row.status&0b1" type="info" size="small" icon="el-icon-delete" @click="handleRevertDeleted(scope.row)">revert</el-button>
-          <el-button v-else type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row)">delete</el-button>
+          <el-button type="primary" size="small" icon="el-icon-edit" @click="handleUpdate(scope.row)">{{ $t('wander.edit') }}</el-button>
+          <el-button v-if="scope.row.status&0b1" type="info" size="small" icon="el-icon-delete" @click="handleRevertDeleted(scope.row)">{{ $t('wander.revert') }}</el-button>
+          <el-button v-else type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row)">{{ $t('wander.delete') }}</el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <el-dialog :title="dialogStatus" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item :label="$t('table.name')" prop="name">
+        <el-form-item :label="$t('wander.name')" prop="name">
           <el-input v-model="temp.name"/>
         </el-form-item>
-        <el-form-item :label="$t('table.description')" prop="description">
+        <el-form-item :label="$t('wander.description')" prop="description">
           <el-input
             :autosize="{ minRows: 2, maxRows: 4}"
             v-model="temp.description"
             type="textarea"
             placeholder="请输入内容"/>
         </el-form-item>
-        <el-form-item :label="$t('table.background')" prop="background">
+        <el-form-item :label="$t('wander.background')" prop="background">
           <el-upload
             :on-success="handleBackgroundSuccess"
             :before-upload="beforeBackgroundUpload"
@@ -121,7 +121,7 @@
         </el-form-item>
         <!--<el-form-item-->
         <!--v-for="(item, index) in temp.productId"-->
-        <!--:label="$t('table.productId')"-->
+        <!--:label="$t('wander.productId')"-->
         <!--:key="'productId.' + index"-->
         <!--prop="productId">-->
         <!--<el-input v-model="item.value"/>-->
@@ -130,10 +130,10 @@
         <!--<el-form-item>-->
         <!--<el-button @click="addProductId">新增productId</el-button>-->
         <!--</el-form-item>-->
-        <el-form-item :label="$t('table.price')" prop="name">
+        <el-form-item :label="$t('wander.price')" prop="name">
           <el-input v-model="temp.price"/>
         </el-form-item>
-        <el-form-item :label="$t('table.scenes')" prop="scenes">
+        <el-form-item :label="$t('wander.scenes')" prop="scenes">
           <el-checkbox-group v-model="temp.scenes">
             <el-checkbox
               v-for="(sceneOption) in sceneOptions"
@@ -141,7 +141,7 @@
               :label="sceneOption.id">{{ sceneOption.name }}</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
-        <el-form-item :label="$t('table.wanderAlbums')" prop="wanderAlbums">
+        <el-form-item :label="$t('wander.wanderAlbums')" prop="wanderAlbums">
           <el-checkbox-group v-model="temp.wanderAlbums">
             <el-checkbox
               v-for="(wanderAlbumOption) in wanderAlbumOptions"
@@ -149,7 +149,7 @@
               :label="wanderAlbumOption.id">{{ wanderAlbumOption.name }}</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
-        <el-form-item :label="$t('table.audio')" prop="audio">
+        <el-form-item :label="$t('wander.audio')" prop="audio">
           <el-upload
             :on-success="handleAudioSuccess"
             :before-upload="beforeAudioUpload"
@@ -165,21 +165,21 @@
             <div slot="tip" class="el-upload__tip">只能上传音频文件，且不超过20M</div>
           </el-upload>
         </el-form-item>
-        <el-form-item :label="$t('table.copy')" prop="copy">
+        <el-form-item :label="$t('wander.copy')" prop="copy">
           <el-input
             :autosize="{ minRows: 2, maxRows: 4}"
             v-model="temp.copy"
             type="textarea"
             placeholder="请输入内容"/>
         </el-form-item>
-        <el-form-item v-show="false" :label="$t('table.author')" prop="author">
+        <el-form-item v-show="false" :label="$t('wander.author')" prop="author">
           <el-input v-model="temp.author"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
-        <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">{{ $t('table.confirm') }}</el-button>
-        <el-button v-else type="primary" @click="updateData">{{ $t('table.confirm') }}</el-button>
+        <el-button @click="dialogFormVisible = false">{{ $t('wander.cancel') }}</el-button>
+        <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">{{ $t('wander.confirm') }}</el-button>
+        <el-button v-else type="primary" @click="updateData">{{ $t('wander.confirm') }}</el-button>
       </div>
     </el-dialog>
 

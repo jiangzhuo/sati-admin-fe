@@ -188,7 +188,7 @@ export const asyncRouterMap = [
     path: '/wander',
     name: 'Wander',
     meta: {
-      title: 'Wander',
+      title: 'wander',
       icon: 'tab',
       roles: ['admin', 'editor']
     },

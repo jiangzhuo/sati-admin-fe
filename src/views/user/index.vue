@@ -1,11 +1,11 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input :placeholder="$t('table.title')" v-model="listQuery.keyword" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter"/>
+      <el-input :placeholder="$t('user.keyword')" v-model="listQuery.keyword" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter"/>
       <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
         <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key"/>
       </el-select>
-      <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">{{ $t('table.search') }}</el-button>
+      <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">{{ $t('user.search') }}</el-button>
     </div>
 
     <el-table
@@ -16,32 +16,32 @@
       fit
       highlight-current-row
       style="width: 100%;">
-      <el-table-column :label="$t('table.id')" align="center">
+      <el-table-column :label="$t('user.id')" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.mobile')" align="center">
+      <el-table-column :label="$t('user.mobile')" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.mobile }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.nickname')" align="center">
+      <el-table-column :label="$t('user.nickname')" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.nickname }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.balance')" align="center">
+      <el-table-column :label="$t('user.balance')" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.balance }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.createTime')" align="center">
+      <el-table-column :label="$t('user.createTime')" align="center">
         <template slot-scope="scope">
           <span>{{ new Date(scope.row.createTime*1000) }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.status')" align="center">
+      <el-table-column :label="$t('user.status')" align="center">
         <template slot-scope="scope">
           <!--<span>{{ scope.row.status }}</span>-->
           <el-tag v-if="scope.row.status&0b1" type="success">第一标志位开</el-tag>
@@ -50,12 +50,21 @@
           <el-tag v-else type="danger">第二标志位关</el-tag>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.updateTime')" align="center">
+      <el-table-column :label="$t('user.role')" align="center">
+        <template slot-scope="scope">
+          <!--<span>{{ scope.row.status }}</span>-->
+          <el-tag v-if="scope.row.role&0b1">超级管理员</el-tag>
+          <el-tag v-if="scope.row.role&0b10">管理员</el-tag>
+          <el-tag v-if="scope.row.role&0b100">编辑</el-tag>
+          <el-tag v-if="scope.row.role===0">普通用户</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('user.updateTime')" align="center">
         <template slot-scope="scope">
           <span>{{ new Date(scope.row.updateTime*1000) }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.actions')" align="center">
+      <el-table-column :label="$t('user.actions')" align="center">
         <template slot-scope="scope">
           <router-link :to="'/user/account/'+scope.row.id">
             <el-button type="primary" size="small" icon="el-icon-money">消费明细</el-button>
@@ -69,16 +78,16 @@
 
     <el-dialog :visible.sync="dialogFormVisible" title="修改余额">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left">
-        <el-form-item :label="$t('table.changeBalanceValue')" prop="changeBalanceValue">
+        <el-form-item :label="$t('user.changeBalanceValue')" prop="changeBalanceValue">
           <el-input-number v-model="temp.tempChangeBalanceValue"/>
         </el-form-item>
-        <el-form-item :label="$t('table.changeBalanceExtraInfo')" prop="changeBalanceExtraInfo">
+        <el-form-item :label="$t('user.changeBalanceExtraInfo')" prop="changeBalanceExtraInfo">
           <el-input v-model="temp.tempChangeBalanceExtraInfo" type="textarea" autosize placeholder="修改原因"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
-        <el-button type="primary" @click="changeBalance">{{ $t('table.confirm') }}</el-button>
+        <el-button @click="dialogFormVisible = false">{{ $t('user.cancel') }}</el-button>
+        <el-button type="primary" @click="changeBalance">{{ $t('user.confirm') }}</el-button>
       </div>
     </el-dialog>
 

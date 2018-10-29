@@ -3,8 +3,10 @@ query admin ($keyword: String!){
     code
     message
     data {
-      id
-      name
+      data{
+        id
+        name
+      }
     }
   }
 }
