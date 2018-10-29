@@ -2,9 +2,9 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input :placeholder="$t('user.keyword')" v-model="listQuery.keyword" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter"/>
-      <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
-        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key"/>
-      </el-select>
+      <!--<el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">-->
+      <!--<el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key"/>-->
+      <!--</el-select>-->
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">{{ $t('user.search') }}</el-button>
     </div>
 
@@ -119,10 +119,10 @@ export default {
       listQuery: {
         page: 1,
         limit: 20,
-        keyword: '',
-        sort: '+_id'
+        keyword: ''
+        // sort: '+_id'
       },
-      sortOptions: [{ label: 'ID Ascending', key: '+_id' }, { label: 'ID Descending', key: '-_id' }],
+      // sortOptions: [{ label: 'ID Ascending', key: '+_id' }, { label: 'ID Descending', key: '-_id' }],
       rules: {
         type: [{ required: true, message: 'type is required', trigger: 'change' }],
         timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
@@ -153,8 +153,8 @@ export default {
         variables: this.listQuery,
         fetchPolicy: 'network-only' // 只从网络获取
       })
-      this.list = result.data.searchUser.data
-      this.total = result.data.countUser.data
+      this.list = result.data.searchUser.data.data
+      this.total = result.data.searchUser.data.total
       this.listLoading = false
     },
     handleFilter() {
