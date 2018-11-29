@@ -81,7 +81,11 @@ export default {
     actions: '操作',
     search: '搜索',
     keyword: '关键词(唯一id、昵称、手机号)',
-    role: '权限角色'
+    role: '权限角色',
+    changeBalanceValue: '调整余额',
+    changeBalanceExtraInfo: '备注',
+    confirm: '确认',
+    cancel: '取消'
   },
   home: {
     id: '唯一id',
@@ -94,6 +98,7 @@ export default {
     position: '位置',
     createTime: '创建时间',
     updateTime: '更新时间',
+    validTime: '生效时间',
     actions: '操作',
     cancel: '取消',
     confirm: '确认',
@@ -248,7 +253,11 @@ export default {
     draft: '草稿',
     delete: '删除',
     cancel: '取 消',
-    confirm: '确 定'
+    confirm: '确 定',
+    nickname: '昵称',
+    afterBalance: '调整后余额',
+    createTime: '创建时间',
+    value: '值'
   },
   errorLog: {
     tips: '请点击右上角bug小图标',

@@ -12,6 +12,7 @@ mutation admin($createData: createHomeRequest!) {
       description
       createTime
       updateTime
+      validTime
       author
     }
   }

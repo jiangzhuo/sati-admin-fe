@@ -22,7 +22,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column :label="$t('scene.actoions')" align="center">
+      <el-table-column :label="$t('scene.actions')" align="center">
         <template slot-scope="scope">
           <el-button v-if="scope.row.edit" type="success" size="small" icon="el-icon-circle-check-outline" @click="confirmEdit(scope.row)">Ok</el-button>
           <el-button v-if="scope.row.edit" type="warning" size="small" icon="el-icon-refresh" @click="cancelEdit(scope.row)">cancel</el-button>

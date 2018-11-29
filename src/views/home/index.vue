@@ -80,11 +80,17 @@
           <span>{{ new Date(scope.row.updateTime*1000) }}</span>
         </template>
       </el-table-column>
+      <el-table-column :label="$t('home.validTime')" align="center">
+        <template slot-scope="scope">
+          <span>{{ new Date(scope.row.validTime*1000) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column :label="$t('home.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button type="primary" size="small" icon="el-icon-edit" @click="handleUpdate(scope.row)">Edit</el-button>
           <!--<el-button v-if="scope.row.status&0b1" type="info" size="small" icon="el-icon-delete" @click="handleRevertDeleted(scope.row)">revert</el-button>-->
           <!--<el-button v-else type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row)">delete</el-button>-->
+          <el-button type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row)">delete</el-button>
         </template>
       </el-table-column>
       <el-table-column v-if="false" align="center" label="Drag" width="80">
@@ -93,7 +99,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <div v-if="false" class="show-d">{{ $t('home.dragTips1') }} : &nbsp; {{ oldList }}</div>
+    <div v-if="false" class="show-d">{{ $t('home.dragTips1') }} : {{ oldList }}</div>
     <div v-if="false" class="show-d">{{ $t('home.dragTips2') }} : {{ newList }}</div>
 
     <el-dialog :title="dialogStatus" :visible.sync="dialogFormVisible">
@@ -169,6 +175,9 @@
         </el-form-item>
         <el-form-item :label="$t('home.position')" prop="author">
           <el-input-number v-model="temp.position" :min="0" :max="10"/>
+        </el-form-item>
+        <el-form-item :label="$t('home.validTime')" prop="validTime">
+          <el-date-picker v-model="temp.validTime" type="datetime" placeholder="Please pick a date"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -477,7 +486,8 @@ export default {
             name: this.temp.name,
             description: this.temp.description,
             author: this.temp.author,
-            position: this.temp.position
+            position: this.temp.position,
+            validTime: Math.floor(new Date(this.temp.validTime).getTime() / 1000)
           }
         }
       })
@@ -517,7 +527,7 @@ export default {
       this.temp.author = this.$store.getters.id
       // this.temp.productId = this.temp.productId.map((pidValue) => pidValue.value)
       // console.log(this.temp)
-      console.log(this.temp.position)
+      console.log(this.temp)
       if (this.temp.type === 'shop') {
         this.temp.resourceId = '000000000000000000000000'
       }
@@ -534,7 +544,8 @@ export default {
             name: this.temp.name,
             description: this.temp.description,
             author: this.temp.author,
-            position: this.temp.position
+            position: this.temp.position,
+            validTime: Math.floor(new Date(this.temp.validTime).getTime() / 1000)
           }
         }
       })

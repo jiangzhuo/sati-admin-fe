@@ -12,6 +12,7 @@ query admin {
       description
       createTime
       updateTime
+      validTime
       author
     }
   }

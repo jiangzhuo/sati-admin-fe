@@ -12,6 +12,7 @@ mutation admin($id: String!, $updateData: updateHomeRequest!) {
       description
       createTime
       updateTime
+      validTime
       author
     }
   }
