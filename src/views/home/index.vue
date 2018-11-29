@@ -177,7 +177,7 @@
           <el-input-number v-model="temp.position" :min="0" :max="10"/>
         </el-form-item>
         <el-form-item :label="$t('home.validTime')" prop="validTime">
-          <el-date-picker v-model="temp.validTime" type="datetime" placeholder="Please pick a date"/>
+          <el-date-picker v-model="temp.validTime" type="datetime" value-format="timestamp" placeholder="Please pick a date"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -257,7 +257,7 @@ export default {
       newList: [],
       listLoading: true,
       resourceOptionsLoading: true,
-      temp: { resourceId: '', position: 0 },
+      temp: { resourceId: '', position: 0, validTime: new Date() },
       tempAudioFileList: [],
       tempBackgroundFileList: [],
       dialogStatus: 'create',
@@ -487,7 +487,7 @@ export default {
             description: this.temp.description,
             author: this.temp.author,
             position: this.temp.position,
-            validTime: Math.floor(new Date(this.temp.validTime).getTime() / 1000)
+            validTime: Math.floor(this.temp.validTime / 1000)
           }
         }
       })
@@ -516,6 +516,7 @@ export default {
     handleUpdate(row) {
       this.resetTemp()
       this.temp = _.cloneDeep(row)
+      this.temp.validTime = this.temp.validTime * 1000
       this.resourceOptions = [{ id: row.resourceId, name: this.resourceMap[row.resourceId].name }]
       // this.temp.productId = this.temp.productId.map((pid)=>{ return { value: pid } })
       this.tempBackgroundFileList = row.background ? [{ url: row.background }] : []
@@ -545,7 +546,7 @@ export default {
             description: this.temp.description,
             author: this.temp.author,
             position: this.temp.position,
-            validTime: Math.floor(new Date(this.temp.validTime).getTime() / 1000)
+            validTime: Math.floor(this.temp.validTime / 1000)
           }
         }
       })
