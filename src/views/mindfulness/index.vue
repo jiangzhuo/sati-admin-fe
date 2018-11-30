@@ -28,7 +28,7 @@
       </el-table-column>
       <el-table-column :label="$t('mindfulness.background')" align="center">
         <template slot-scope="scope">
-          <a href="https://developer.mozilla.org/"><img :src="scope.row.background" style="width: auto; height: auto; max-width: 100%; max-height: 100%;"></a>
+          <a href="https://developer.mozilla.org/"><img :src="scope.row.background[0]" style="width: auto; height: auto; max-width: 100%; max-height: 100%;"></a>
         </template>
       </el-table-column>
       <el-table-column :label="$t('mindfulness.price')" align="center">
@@ -105,8 +105,6 @@
             :before-upload="beforeBackgroundUpload"
             :before-remove="beforeBackgroundRemove"
             :on-remove="handleBackgroundRemove"
-            :on-exceed="handleBackgroundExceed"
-            :limit="1"
             :file-list="tempBackgroundFileList"
             :action="uploadBackgroundAPI"
             accept="image/*"
@@ -265,16 +263,32 @@ export default {
       return isLt20M
     },
     handleBackgroundSuccess(res, file, fileList) {
-      this.temp.background = fileList[fileList.length - 1].response.data
+      const backgrounds = []
+      fileList.forEach((fileItem) => {
+        if (fileItem.response) {
+          backgrounds.push(fileItem.response.data)
+        } else {
+          backgrounds.push(fileItem.url)
+        }
+      })
+      this.temp.background = backgrounds
     },
-    handleBackgroundRemove() {
-      this.temp.background = ''
+    handleBackgroundRemove(file, fileList) {
+      const backgrounds = []
+      fileList.forEach((fileItem) => {
+        if (fileItem.response) {
+          backgrounds.push(fileItem.response.data)
+        } else {
+          backgrounds.push(fileItem.url)
+        }
+      })
+      this.temp.background = backgrounds
     },
-    handleBackgroundExceed(files, fileList) {
-      this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
-    },
+    // handleBackgroundExceed(files, fileList) {
+    //   this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
+    // },
     beforeBackgroundRemove(file) {
-      return this.$confirm(`确定移除 ${file.name}？`)
+      return this.$confirm(`确定移除图片？`)
     },
     beforeAudioUpload(file) {
       const isLt20M = file.size / 1024 / 1024 < 20
@@ -398,7 +412,7 @@ export default {
       this.resetTemp()
       this.temp = _.cloneDeep(row)
       // this.temp.productId = this.temp.productId.map((pid)=>{ return { value: pid } })
-      this.tempBackgroundFileList = row.background ? [{ url: row.background }] : []
+      this.tempBackgroundFileList = row.background ? row.background.map(x => ({ url: x })) : []
       this.tempAudioFileList = row.audio ? [{ url: row.audio }] : []
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
