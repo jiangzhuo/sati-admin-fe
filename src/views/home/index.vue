@@ -5,9 +5,9 @@
     </div>
 
     <el-table v-loading="listLoading" ref="dataTable" :data="homeList" border fit highlight-current-row style="width: 100%;">
-      <el-table-column type="expand">
-        <template slot-scope="scope">
-          <el-form label-position="left" inline class="demo-table-expand">
+      <el-table-column type="expand" >
+        <template slot-scope="scope" >
+          <el-form v-if="scope.row.resourceId!=='000000000000000000000000'" label-position="left" inline class="demo-table-expand">
             <el-form-item label="资源id">
               <span>{{ scope.row.resourceId }}</span>
             </el-form-item>
@@ -25,6 +25,11 @@
             </el-form-item>
             <el-form-item label="作者">
               <a :href="'user/userInfo?userId='+resourceMap[scope.row.resourceId].author" target="_blank">{{ userMap[resourceMap[scope.row.resourceId].author]?userMap[resourceMap[scope.row.resourceId].author].nickname:resourceMap[scope.row.resourceId].author }}</a>
+            </el-form-item>
+          </el-form>
+          <el-form v-else label-position="left" inline class="demo-table-expand">
+            <el-form-item label="资源id">
+              <span>{{ scope.row.resourceId }}</span>
             </el-form-item>
           </el-form>
         </template>
