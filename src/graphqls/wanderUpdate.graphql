@@ -15,6 +15,7 @@ mutation admin($id: String!, $updateData: updateWanderRequest!) {
       copy
       wanderAlbums
       status
+      validTime
     }
   }
 }

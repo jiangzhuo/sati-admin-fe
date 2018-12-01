@@ -15,6 +15,7 @@ mutation admin($id: String!, $updateData: updateMindfulnessRequest!) {
       audio
       copy
       status
+      validTime
     }
   }
 }

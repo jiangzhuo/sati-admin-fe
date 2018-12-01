@@ -73,6 +73,11 @@
           <span>{{ new Date(scope.row.updateTime*1000) }}</span>
         </template>
       </el-table-column>
+      <el-table-column :label="$t('home.validTime')" align="center">
+        <template slot-scope="scope">
+          <span>{{ new Date(scope.row.validTime*1000) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column :label="$t('wanderAlbum.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button type="primary" size="small" icon="el-icon-edit" @click="handleUpdate(scope.row)">{{ $t('wanderAlbum.edit') }}</el-button>
@@ -139,6 +144,9 @@
         </el-form-item>
         <el-form-item v-show="false" :label="$t('wanderAlbum.author')" prop="author">
           <el-input v-model="temp.author"/>
+        </el-form-item>
+        <el-form-item :label="$t('home.validTime')" prop="validTime">
+          <el-date-picker v-model="temp.validTime" type="datetime" value-format="timestamp" placeholder="Please pick a date"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -212,7 +220,7 @@ export default {
       ],
       listLoading: true,
       temp: {
-        scenes: []
+        scenes: [], validTime: 0
       },
       tempAudioFileList: [],
       tempBackgroundFileList: [],
@@ -347,6 +355,7 @@ export default {
       this.temp.author = this.$store.getters.id
       // this.temp.productId = this.temp.productId.map((pidValue) => pidValue.value)
       this.temp.price = parseInt(this.temp.price)
+      this.temp.validTime = Math.floor(this.temp.validTime / 1000)
       const data = await this.$apollo.mutate({
         // 查询语句
         mutation: WANDER_ALBUM_CREATE,
@@ -390,6 +399,7 @@ export default {
     handleUpdate(row) {
       this.resetTemp()
       this.temp = _.cloneDeep(row)
+      this.temp.validTime = this.temp.validTime * 1000
       // this.temp.productId = this.temp.productId.map((pid)=>{ return { value: pid } })
       this.tempBackgroundFileList = row.background ? row.background.map(x => ({ url: x })) : []
       this.tempAudioFileList = row.audio ? [{ url: row.audio }] : []
@@ -416,7 +426,8 @@ export default {
             price: parseInt(this.temp.price),
             author: this.$store.getters.id,
             audio: this.temp.audio,
-            status: this.temp.status
+            status: this.temp.status,
+            validTime: Math.floor(this.temp.validTime / 1000)
           }
         }
       })

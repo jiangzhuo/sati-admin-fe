@@ -15,6 +15,7 @@ mutation admin($createData: createWanderRequest!) {
       copy
       wanderAlbums
       status
+      validTime
     }
   }
 }

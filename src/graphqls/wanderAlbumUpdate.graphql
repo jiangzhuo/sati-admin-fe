@@ -13,6 +13,7 @@ mutation admin($id: String!, $updateData: updateWanderAlbumRequest!) {
       author
       copy
       status
+      validTime
     }
   }
 }

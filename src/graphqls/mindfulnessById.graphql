@@ -14,6 +14,7 @@ query admin($id: String!) {
       audio
       copy
       status
+      validTime
     }
   }
 }

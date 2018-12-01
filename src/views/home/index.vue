@@ -255,7 +255,7 @@ export default {
       newList: [],
       listLoading: true,
       resourceOptionsLoading: true,
-      temp: { resourceId: '', position: 0, validTime: new Date() },
+      temp: { resourceId: '', position: 0, validTime: 0 },
       tempAudioFileList: [],
       tempBackgroundFileList: [],
       dialogStatus: 'create',
@@ -409,6 +409,9 @@ export default {
       console.log(this.userMap)
     },
     async getResource(type, resourceId) {
+      if (resourceId === '000000000000000000000000') {
+        return
+      }
       let query
       let resultField
       if (type === 'mindfulness') {
@@ -487,6 +490,9 @@ export default {
       if (this.temp.type === 'shop') {
         this.temp.resourceId = '000000000000000000000000'
       }
+      if (!this.temp.resourceId) {
+        this.temp.resourceId = '000000000000000000000000'
+      }
       // this.temp.productId = this.temp.productId.map((pidValue) => pidValue.value)
       const data = await this.$apollo.mutate({
         // 查询语句
@@ -544,6 +550,9 @@ export default {
       // console.log(this.temp)
       console.log(this.temp)
       if (this.temp.type === 'shop') {
+        this.temp.resourceId = '000000000000000000000000'
+      }
+      if (!this.temp.resourceId) {
         this.temp.resourceId = '000000000000000000000000'
       }
       await this.$apollo.mutate({

@@ -15,6 +15,7 @@ mutation admin($id: String!, $updateData: updateNatureRequest!) {
       audio
       copy
       status
+      validTime
     }
   }
 }

@@ -78,6 +78,11 @@
           <span>{{ new Date(scope.row.updateTime*1000) }}</span>
         </template>
       </el-table-column>
+      <el-table-column :label="$t('mindfulness.validTime')" align="center">
+        <template slot-scope="scope">
+          <span>{{ new Date(scope.row.validTime*1000) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column :label="$t('mindfulness.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button type="primary" size="small" icon="el-icon-edit" @click="handleUpdate(scope.row)">Edit</el-button>
@@ -161,6 +166,9 @@
             type="textarea"
             placeholder="请输入内容"/>
         </el-form-item>
+        <el-form-item :label="$t('mindfulness.validTime')" prop="validTime">
+          <el-date-picker v-model="temp.validTime" type="datetime" value-format="timestamp" placeholder="Please pick a date"/>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">{{ $t('mindfulness.cancel') }}</el-button>
@@ -232,9 +240,7 @@ export default {
         // }
       ],
       listLoading: true,
-      temp: {
-        scenes: []
-      },
+      temp: { scenes: [], validTime: 0 },
       tempAudioFileList: [],
       tempBackgroundFileList: [],
       dialogStatus: 'create',
@@ -364,9 +370,9 @@ export default {
       this.dialogFormVisible = true
     },
     async createData() {
-      console.log(this.temp)
       this.temp.author = this.$store.getters.id
       this.temp.price = parseInt(this.temp.price)
+      this.temp.validTime = Math.floor(this.temp.validTime / 1000)
       // this.temp.productId = this.temp.productId.map((pidValue) => pidValue.value)
       const data = await this.$apollo.mutate({
         // 查询语句
@@ -411,6 +417,7 @@ export default {
     handleUpdate(row) {
       this.resetTemp()
       this.temp = _.cloneDeep(row)
+      this.temp.validTime = this.temp.validTime * 1000
       // this.temp.productId = this.temp.productId.map((pid)=>{ return { value: pid } })
       this.tempBackgroundFileList = row.background ? row.background.map(x => ({ url: x })) : []
       this.tempAudioFileList = row.audio ? [{ url: row.audio }] : []
@@ -438,7 +445,8 @@ export default {
             author: this.$store.getters.id,
             audio: this.temp.audio,
             copy: this.temp.copy,
-            status: this.temp.status
+            status: this.temp.status,
+            validTime: Math.floor(this.temp.validTime / 1000)
           }
         }
       })

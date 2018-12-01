@@ -13,6 +13,7 @@ mutation admin($createData: createWanderAlbumRequest!) {
       author
       copy
       status
+      validTime
     }
   }
 }
