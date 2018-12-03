@@ -4,9 +4,11 @@ export default {
     home: '应用首页',
     scene: '场景',
     mindfulness: '正念',
+    mindfulnessAlbum: '正念合集',
     nature: '自然',
+    natureAlbum: '自然合集',
     wander: '漫步',
-    wanderAlbum: '漫步专辑',
+    wanderAlbum: '漫步合集',
     dashboard: '首页',
     introduction: '简述',
     documentation: '文档',
@@ -129,7 +131,8 @@ export default {
     actions: '操作',
     cancel: '取消',
     confirm: '确认',
-    add: '添加'
+    add: '添加',
+    mindfulnessAlbums: '正态合集'
   },
   nature: {
     id: '唯一id',
@@ -150,7 +153,8 @@ export default {
     add: '添加',
     edit: '编辑',
     delete: '删除',
-    revert: '恢复'
+    revert: '恢复',
+    natureAlbums: '自然合集'
   },
   wander: {
     id: '唯一id',
@@ -172,7 +176,7 @@ export default {
     edit: '编辑',
     delete: '删除',
     revert: '恢复',
-    wanderAlbums: '漫步专辑'
+    wanderAlbums: '漫步合集'
   },
   wanderAlbum: {
     id: '唯一id',

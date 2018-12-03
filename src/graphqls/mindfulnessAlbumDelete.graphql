@@ -1,0 +1,6 @@
+mutation admin ($id: String!) {
+  deleteMindfulnessAlbum(id: $id) {
+    code
+    message
+  }
+}

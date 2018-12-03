@@ -1,0 +1,12 @@
+query admin ($keyword: String!){
+  searchMindfulnessAlbum(keyword: $keyword) {
+    code
+    message
+    data {
+      data {
+        id
+        name
+      }
+    }
+  }
+}

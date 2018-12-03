@@ -1,5 +1,5 @@
-mutation admin($createData: createNatureRequest!) {
-  createNature(data: $createData) {
+mutation admin($createData: createNatureAlbumRequest!) {
+  createNatureAlbum(data: $createData) {
     code
     message
     data {
@@ -11,9 +11,7 @@ mutation admin($createData: createNatureRequest!) {
       createTime
       updateTime
       author
-      audio
       copy
-      natureAlbums
       status
       validTime
     }

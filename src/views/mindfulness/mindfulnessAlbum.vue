@@ -1,21 +1,21 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-button style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('mindfulness.add') }}</el-button>
+      <el-button style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('mindfulnessAlbum.add') }}</el-button>
     </div>
 
-    <el-table v-loading="listLoading" ref="dataTable" :data="mindfulnessList" border fit highlight-current-row style="width: 100%;">
-      <el-table-column :label="$t('mindfulness.id')" align="center">
+    <el-table v-loading="listLoading" ref="dataTable" :data="mindfulnessAlbumList" border fit highlight-current-row style="width: 100%;">
+      <el-table-column :label="$t('mindfulnessAlbum.id')" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('mindfulness.name')" align="center">
+      <el-table-column :label="$t('mindfulnessAlbum.name')" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('mindfulness.description')" align="center">
+      <el-table-column :label="$t('mindfulnessAlbum.description')" align="center">
         <template slot-scope="scope">
           <el-popover
             :content="scope.row.description"
@@ -26,34 +26,29 @@
           </el-popover>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('mindfulness.background')" align="center">
+      <el-table-column :label="$t('mindfulnessAlbum.background')" align="center">
         <template slot-scope="scope">
           <a href="https://developer.mozilla.org/"><img :src="scope.row.background[0]" style="width: auto; height: auto; max-width: 100%; max-height: 100%;"></a>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('mindfulness.price')" align="center">
+      <el-table-column :label="$t('mindfulnessAlbum.price')" align="center">
         <template slot-scope="scope">
+          <!--<el-tag v-for="pid in scope.row.productId" :key="pid">{{ pid }}</el-tag>-->
           <span>{{ scope.row.price }}</span>
-          <!--<el-tag v-for="pid in scope.row.price" :key="pid">{{ pid }}</el-tag>-->
         </template>
       </el-table-column>
-      <el-table-column :label="$t('mindfulness.scenes')" align="center">
+      <el-table-column :label="$t('mindfulnessAlbum.scenes')" align="center">
         <template slot-scope="scope">
           <el-tag v-for="scene in scope.row.scenes" :key="scene">{{ sceneMap[scene].name }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('mindfulness.audio')" align="center">
-        <template slot-scope="scope">
-          <audio :src="scope.row.audio" controls="controls"/>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('mindfulness.author')" align="center">
+      <el-table-column :label="$t('mindfulnessAlbum.author')" align="center">
         <template slot-scope="scope">
           <a :href="'user/userInfo?userId='+scope.row.author" target="_blank">{{ userMap[scope.row.author]?userMap[scope.row.author].nickname:scope.row.author }}</a>
           <!--<a href="index.vue">{{ userMap[scope.row.author]?userMap[scope.row.author].nickname:scope.row.author }}</a>-->
         </template>
       </el-table-column>
-      <el-table-column :label="$t('mindfulness.copy')" align="center">
+      <el-table-column :label="$t('mindfulnessAlbum.copy')" align="center">
         <template slot-scope="scope">
           <el-popover
             :content="scope.row.copy"
@@ -64,12 +59,7 @@
           </el-popover>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('mindfulness.mindfulnessAlbums')" align="center">
-        <template slot-scope="scope">
-          <el-tag v-for="mindfulnessAlbum in scope.row.mindfulnessAlbums" :key="mindfulnessAlbum">{{ mindfulnessAlbumMap[mindfulnessAlbum].name }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('mindfulness.status')" align="center">
+      <el-table-column :label="$t('mindfulnessAlbum.status')" align="center">
         <template slot-scope="scope">
           <!--<span>{{ scope.row.status }}</span>-->
           <el-tag v-if="scope.row.status&0b1" type="success">已删除</el-tag>
@@ -78,38 +68,38 @@
           <el-tag v-else type="danger">第二标志位关</el-tag>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('mindfulness.updateTime')" align="center">
+      <el-table-column :label="$t('mindfulnessAlbum.updateTime')" align="center">
         <template slot-scope="scope">
           <span>{{ new Date(scope.row.updateTime*1000) }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('mindfulness.validTime')" align="center">
+      <el-table-column :label="$t('home.validTime')" align="center">
         <template slot-scope="scope">
           <span>{{ new Date(scope.row.validTime*1000) }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('mindfulness.actions')" align="center" width="230" class-name="small-padding fixed-width">
+      <el-table-column :label="$t('mindfulnessAlbum.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button type="primary" size="small" icon="el-icon-edit" @click="handleUpdate(scope.row)">Edit</el-button>
-          <el-button v-if="scope.row.status&0b1" type="info" size="small" icon="el-icon-delete" @click="handleRevertDeleted(scope.row)">revert</el-button>
-          <el-button v-else type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row)">delete</el-button>
+          <el-button type="primary" size="small" icon="el-icon-edit" @click="handleUpdate(scope.row)">{{ $t('mindfulnessAlbum.edit') }}</el-button>
+          <el-button v-if="scope.row.status&0b1" type="info" size="small" icon="el-icon-delete" @click="handleRevertDeleted(scope.row)">{{ $t('mindfulnessAlbum.revert') }}</el-button>
+          <el-button v-else type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row)">{{ $t('mindfulnessAlbum.delete') }}</el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <el-dialog :title="dialogStatus" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item :label="$t('mindfulness.name')" prop="name">
+        <el-form-item :label="$t('mindfulnessAlbum.name')" prop="name">
           <el-input v-model="temp.name"/>
         </el-form-item>
-        <el-form-item :label="$t('mindfulness.description')" prop="description">
+        <el-form-item :label="$t('mindfulnessAlbum.description')" prop="description">
           <el-input
             :autosize="{ minRows: 2, maxRows: 4}"
             v-model="temp.description"
             type="textarea"
             placeholder="请输入内容"/>
         </el-form-item>
-        <el-form-item :label="$t('mindfulness.background')" prop="background">
+        <el-form-item :label="$t('mindfulnessAlbum.background')" prop="background">
           <el-upload
             :on-success="handleBackgroundSuccess"
             :before-upload="beforeBackgroundUpload"
@@ -125,7 +115,7 @@
         </el-form-item>
         <!--<el-form-item-->
         <!--v-for="(item, index) in temp.productId"-->
-        <!--:label="$t('mindfulness.productId')"-->
+        <!--:label="$t('mindfulnessAlbum.productId')"-->
         <!--:key="'productId.' + index"-->
         <!--prop="productId">-->
         <!--<el-input v-model="item.value"/>-->
@@ -134,10 +124,10 @@
         <!--<el-form-item>-->
         <!--<el-button @click="addProductId">新增productId</el-button>-->
         <!--</el-form-item>-->
-        <el-form-item :label="$t('mindfulness.price')" prop="name">
+        <el-form-item :label="$t('mindfulnessAlbum.price')" prop="name">
           <el-input v-model="temp.price"/>
         </el-form-item>
-        <el-form-item :label="$t('mindfulness.scenes')" prop="scenes">
+        <el-form-item :label="$t('mindfulnessAlbum.scenes')" prop="scenes">
           <el-checkbox-group v-model="temp.scenes">
             <el-checkbox
               v-for="(sceneOption) in sceneOptions"
@@ -145,48 +135,24 @@
               :label="sceneOption.id">{{ sceneOption.name }}</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
-        <el-form-item :label="$t('mindfulness.mindfulnessAlbums')" prop="mindfulnessAlbums">
-          <el-checkbox-group v-model="temp.mindfulnessAlbums">
-            <el-checkbox
-              v-for="(mindfulnessAlbumOption) in mindfulnessAlbumOptions"
-              :key="mindfulnessAlbumOption.id"
-              :label="mindfulnessAlbumOption.id">{{ mindfulnessAlbumOption.name }}</el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
-        <el-form-item :label="$t('mindfulness.audio')" prop="audio">
-          <el-upload
-            :on-success="handleAudioSuccess"
-            :before-upload="beforeAudioUpload"
-            :before-remove="beforeAudioRemove"
-            :on-remove="handleAudioRemove"
-            :on-exceed="handleAudioExceed"
-            :limit="1"
-            :file-list="tempAudioFileList"
-            :action="uploadAudioAPI"
-            accept="audio/*"
-            list-type="text">
-            <el-button size="small" type="primary">点击上传</el-button>
-            <!--<div slot="tip" class="el-upload__tip">只能上传音频文件，且不超过20M</div>-->
-          </el-upload>
-        </el-form-item>
-        <el-form-item v-show="false" :label="$t('mindfulness.author')" prop="author">
-          <el-input v-model="temp.author"/>
-        </el-form-item>
-        <el-form-item :label="$t('mindfulness.copy')" prop="copy">
+        <el-form-item :label="$t('mindfulnessAlbum.copy')" prop="copy">
           <el-input
             :autosize="{ minRows: 2, maxRows: 4}"
             v-model="temp.copy"
             type="textarea"
             placeholder="请输入内容"/>
         </el-form-item>
-        <el-form-item :label="$t('mindfulness.validTime')" prop="validTime">
+        <el-form-item v-show="false" :label="$t('mindfulnessAlbum.author')" prop="author">
+          <el-input v-model="temp.author"/>
+        </el-form-item>
+        <el-form-item :label="$t('home.validTime')" prop="validTime">
           <el-date-picker v-model="temp.validTime" type="datetime" value-format="timestamp" placeholder="Please pick a date"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">{{ $t('mindfulness.cancel') }}</el-button>
-        <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">{{ $t('mindfulness.confirm') }}</el-button>
-        <el-button v-else type="primary" @click="updateData">{{ $t('mindfulness.confirm') }}</el-button>
+        <el-button @click="dialogFormVisible = false">{{ $t('mindfulnessAlbum.cancel') }}</el-button>
+        <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">{{ $t('mindfulnessAlbum.confirm') }}</el-button>
+        <el-button v-else type="primary" @click="updateData">{{ $t('mindfulnessAlbum.confirm') }}</el-button>
       </div>
     </el-dialog>
 
@@ -198,26 +164,24 @@
 
 // import * as OSS from 'ali-oss'
 import * as _ from 'lodash'
-import MINDFULNESS_ALL from '@/graphqls/mindfulnessAll.graphql'
-import SCENE_ALL from '@/graphqls/sceneAll.graphql'
 import MINDFULNESS_ALBUM_ALL from '@/graphqls/mindfulnessAlbumAll.graphql'
-import MINDFULNESS_UPDATE from '@/graphqls/mindfulnessUpdate.graphql'
-import MINDFULNESS_DELETE from '@/graphqls/mindfulnessDelete.graphql'
-import MINDFULNESS_REVERT_DELETED from '@/graphqls/mindfulnessRevertDeleted.graphql'
-import MINDFULNESS_CREATE from '@/graphqls/mindfulnessCreate.graphql'
+import SCENE_ALL from '@/graphqls/sceneAll.graphql'
+import MINDFULNESS_ALBUM_UPDATE from '@/graphqls/mindfulnessAlbumUpdate.graphql'
+import MINDFULNESS_ALBUM_DELETE from '@/graphqls/mindfulnessAlbumDelete.graphql'
+import MINDFULNESS_ALBUM_REVERT_DELETED from '@/graphqls/mindfulnessAlbumRevertDeleted.graphql'
+import MINDFULNESS_ALBUM_CREATE from '@/graphqls/mindfulnessAlbumCreate.graphql'
 import USER_BY_ID from '@/graphqls/userById.graphql'
 
 export default {
-  name: 'MindfulnessTable',
+  name: 'MindfulnessAlbumTable',
   data() {
     return {
+      uploadBackgroundAPI: process.env.BASE_API + '/uploadBackground/',
+      uploadAudioAPI: process.env.BASE_API + '/uploadBackground/',
       sceneMap: {},
       sceneOptions: [],
       userMap: {},
-      mindfulnessAlbumMap: {},
-      uploadBackgroundAPI: process.env.BASE_API + '/uploadBackground/',
-      uploadAudioAPI: process.env.BASE_API + '/uploadBackground/',
-      mindfulnessList: [
+      mindfulnessAlbumList: [
         // {
         //   'id': '5ba0db5b18b0d02bbf55b832',
         //   'background': 'https://www.baidu.com/img/bd_logo1.png',
@@ -255,7 +219,9 @@ export default {
         // }
       ],
       listLoading: true,
-      temp: { scenes: [], validTime: 0, mindfulnessAlbums: [] },
+      temp: {
+        scenes: [], validTime: 0
+      },
       tempAudioFileList: [],
       tempBackgroundFileList: [],
       dialogStatus: 'create',
@@ -264,7 +230,6 @@ export default {
   },
   async created() {
     await this.getScene()
-    await this.getMindfulnessAlbumAll()
     await this.getList()
   },
   methods: {
@@ -312,15 +277,6 @@ export default {
     beforeBackgroundRemove(file) {
       return this.$confirm(`确定移除图片？`)
     },
-    beforeAudioUpload(file) {
-      return true
-      // const isLt20M = file.size / 1024 / 1024 < 20
-      //
-      // if (!isLt20M) {
-      //   this.$message.error('上传头像图片大小不能超过 20MB!')
-      // }
-      // return isLt20M
-    },
     handleAudioSuccess(res, file, fileList) {
       console.log(fileList[fileList.length - 1].response.data)
       this.temp.audio = fileList[fileList.length - 1].response.data
@@ -341,13 +297,6 @@ export default {
         this.sceneMap[scene.id] = scene
       })
     },
-    async getMindfulnessAlbumAll() {
-      const result = await this.$apollo.query({ query: MINDFULNESS_ALBUM_ALL })
-      this.mindfulnessAlbumOptions = result.data.getMindfulnessAlbum.data
-      result.data.getMindfulnessAlbum.data.forEach((mindfulnessAlbum) => {
-        this.mindfulnessAlbumMap[mindfulnessAlbum.id] = mindfulnessAlbum
-      })
-    },
     async getUser(userId) {
       const result = await this.$apollo.query({
         // 查询语句
@@ -364,26 +313,25 @@ export default {
       this.listLoading = true
       const result = await this.$apollo.query({
         // 查询语句
-        query: MINDFULNESS_ALL,
+        query: MINDFULNESS_ALBUM_ALL,
         // 参数
         variables: {
           first: 20
         },
         fetchPolicy: 'network-only' // 只从网络获取
       })
-      const promises = result.data.getMindfulness.data.map((mindfulness) => {
-        return this.getUser(mindfulness.author)
+      console.log(result.data)
+      const promises = result.data.getMindfulnessAlbum.data.map((mindfulnessAlbum) => {
+        return this.getUser(mindfulnessAlbum.author)
       })
-      console.log(result)
       await Promise.all(promises)
       console.log(this.userMap)
-      this.mindfulnessList = result.data.getMindfulness.data
+      this.mindfulnessAlbumList = result.data.getMindfulnessAlbum.data
       this.listLoading = false
     },
     resetTemp() {
       this.temp = {
-        scenes: [],
-        mindfulnessAlbums: []
+        scenes: []
         // productId: []
       }
       this.tempAudioFileList = []
@@ -395,13 +343,16 @@ export default {
       this.dialogFormVisible = true
     },
     async createData() {
+      console.log(this.temp)
       this.temp.author = this.$store.getters.id
-      this.temp.price = parseInt(this.temp.price) || 0
-      this.temp.validTime = Math.floor(this.temp.validTime / 1000)
       // this.temp.productId = this.temp.productId.map((pidValue) => pidValue.value)
+      this.temp.price = parseInt(this.temp.price) || 0
+      this.temp.copy = this.temp.copy || ''
+      this.temp.description = this.temp.description || ''
+      this.temp.validTime = Math.floor(this.temp.validTime / 1000)
       const data = await this.$apollo.mutate({
         // 查询语句
-        mutation: MINDFULNESS_CREATE,
+        mutation: MINDFULNESS_ALBUM_CREATE,
         // 参数
         variables: {
           createData: this.temp
@@ -411,20 +362,20 @@ export default {
       console.log('getList')
       // const result = await this.$apollo.query({
       //   // 查询语句
-      //   query: MINDFULNESS_ALL,
+      //   query: MINDFULNESS_ALBUM_ALL,
       //   // 参数
       //   variables: {
       //     first: 20
       //   },
       //   fetchPolicy: 'network-only' // 只从网络获取
       // })
-      // this.mindfulnessList = result.data.getMindfulness.data
+      // this.mindfulnessAlbumList = result.data.getMindfulnessAlbum.data
       await this.getList()
 
-      if (data.data.createMindfulness.code !== 200) {
+      if (data.data.createMindfulnessAlbum.code !== 200) {
         this.$notify({
           title: '失败',
-          message: data.data.createMindfulness.message,
+          message: data.data.createMindfulnessAlbum.message,
           type: 'error',
           duration: 2000
         })
@@ -456,21 +407,20 @@ export default {
       // console.log(this.temp)
       await this.$apollo.mutate({
         // 查询语句
-        mutation: MINDFULNESS_UPDATE,
+        mutation: MINDFULNESS_ALBUM_UPDATE,
         // 参数
         variables: {
           id: this.temp.id,
           updateData: {
             background: this.temp.background,
             name: this.temp.name,
-            description: this.temp.description,
+            description: this.temp.description || '',
+            copy: this.temp.copy || '',
             scenes: this.temp.scenes,
             // productId: this.temp.productId.map((pidValue) => pidValue.value),
             price: parseInt(this.temp.price) || 0,
             author: this.$store.getters.id,
             audio: this.temp.audio,
-            copy: this.temp.copy,
-            mindfulnessAlbums: this.temp.mindfulnessAlbums,
             status: this.temp.status,
             validTime: Math.floor(this.temp.validTime / 1000)
           }
@@ -491,7 +441,7 @@ export default {
       this.listLoading = true
       await this.$apollo.mutate({
         // 查询语句
-        mutation: MINDFULNESS_DELETE,
+        mutation: MINDFULNESS_ALBUM_DELETE,
         // 参数
         variables: {
           id: row.id
@@ -510,7 +460,7 @@ export default {
       this.listLoading = true
       await this.$apollo.mutate({
         // 查询语句
-        mutation: MINDFULNESS_REVERT_DELETED,
+        mutation: MINDFULNESS_ALBUM_REVERT_DELETED,
         // 参数
         variables: {
           id: row.id
@@ -520,7 +470,7 @@ export default {
       this.listLoading = false
       this.$notify({
         title: '成功',
-        message: '恢复成功',
+        message: '删除成功',
         type: 'success',
         duration: 2000
       })

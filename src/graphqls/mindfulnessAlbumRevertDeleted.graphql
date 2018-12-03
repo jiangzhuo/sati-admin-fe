@@ -1,0 +1,6 @@
+mutation admin ($id: String!) {
+  revertNatureWanderAlbum(id: $id) {
+    code
+    message
+  }
+}

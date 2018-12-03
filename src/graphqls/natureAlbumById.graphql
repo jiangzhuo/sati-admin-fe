@@ -1,8 +1,9 @@
-mutation admin($createData: createNatureRequest!) {
-  createNature(data: $createData) {
+query admin($id: String!) {
+  getMatireAlbumById(id: $id) {
     code
     message
     data {
+      id
       background
       name
       description
@@ -11,9 +12,7 @@ mutation admin($createData: createNatureRequest!) {
       createTime
       updateTime
       author
-      audio
       copy
-      natureAlbums
       status
       validTime
     }

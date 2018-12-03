@@ -64,6 +64,11 @@
           </el-popover>
         </template>
       </el-table-column>
+      <el-table-column :label="$t('nature.natureAlbums')" align="center">
+        <template slot-scope="scope">
+          <el-tag v-for="natureAlbum in scope.row.natureAlbums" :key="natureAlbum">{{ natureAlbumMap[natureAlbum].name }}</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column :label="$t('nature.status')" align="center">
         <template slot-scope="scope">
           <!--<span>{{ scope.row.status }}</span>-->
@@ -140,6 +145,14 @@
               :label="sceneOption.id">{{ sceneOption.name }}</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
+        <el-form-item :label="$t('nature.natureAlbums')" prop="natureAlbums">
+          <el-checkbox-group v-model="temp.natureAlbums">
+            <el-checkbox
+              v-for="(natureAlbumOption) in natureAlbumOptions"
+              :key="natureAlbumOption.id"
+              :label="natureAlbumOption.id">{{ natureAlbumOption.name }}</el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
         <el-form-item :label="$t('nature.audio')" prop="audio">
           <el-upload
             :on-success="handleAudioSuccess"
@@ -187,6 +200,7 @@
 import * as _ from 'lodash'
 import NATURE_ALL from '@/graphqls/natureAll.graphql'
 import SCENE_ALL from '@/graphqls/sceneAll.graphql'
+import NATURE_ALBUM_ALL from '@/graphqls/natureAlbumAll.graphql'
 import NATURE_UPDATE from '@/graphqls/natureUpdate.graphql'
 import NATURE_DELETE from '@/graphqls/natureDelete.graphql'
 import NATURE_REVERT_DELETED from '@/graphqls/natureRevertDeleted.graphql'
@@ -200,6 +214,7 @@ export default {
       sceneMap: {},
       sceneOptions: [],
       userMap: {},
+      natureAlbumMap: {},
       uploadBackgroundAPI: process.env.BASE_API + '/uploadBackground/',
       uploadAudioAPI: process.env.BASE_API + '/uploadBackground/',
       natureList: [
@@ -240,7 +255,7 @@ export default {
         // }
       ],
       listLoading: true,
-      temp: { scenes: [], validTime: 0 },
+      temp: { scenes: [], natureAlbums: [], validTime: 0 },
       tempAudioFileList: [],
       tempBackgroundFileList: [],
       dialogStatus: 'create',
@@ -249,6 +264,7 @@ export default {
   },
   async created() {
     await this.getScene()
+    await this.getNatureAlbumAll()
     await this.getList()
   },
   methods: {
@@ -325,6 +341,13 @@ export default {
         this.sceneMap[scene.id] = scene
       })
     },
+    async getNatureAlbumAll() {
+      const result = await this.$apollo.query({ query: NATURE_ALBUM_ALL })
+      this.natureAlbumOptions = result.data.getNatureAlbum.data
+      result.data.getNatureAlbum.data.forEach((natureAlbum) => {
+        this.natureAlbumMap[natureAlbum.id] = natureAlbum
+      })
+    },
     async getUser(userId) {
       const result = await this.$apollo.query({
         // 查询语句
@@ -359,7 +382,8 @@ export default {
     },
     resetTemp() {
       this.temp = {
-        scenes: []
+        scenes: [],
+        natureAlbums: []
         // productId: []
       }
       this.tempAudioFileList = []
@@ -449,6 +473,7 @@ export default {
             author: this.$store.getters.id,
             audio: this.temp.audio,
             copy: this.temp.copy || '',
+            natureAlbums: this.temp.natureAlbums,
             status: this.temp.status,
             validTime: Math.floor(this.temp.validTime / 1000)
           }

@@ -160,27 +160,49 @@ export const asyncRouterMap = [
   },
   {
     path: '/mindfulness',
+    name: 'Mindfulness',
     component: Layout,
-    meta: { roles: ['admin', 'editor'] },
+    meta: {
+      title: 'mindfulness',
+      icon: 'tab',
+      roles: ['admin', 'editor']
+    },
     children: [
       {
         path: 'index',
         component: () => import('@/views/mindfulness/index'),
         name: 'Mindfulness',
         meta: { title: 'mindfulness', icon: 'tab' }
+      },
+      {
+        path: 'mindfulnessAlbum',
+        component: () => import('@/views/mindfulness/mindfulnessAlbum'),
+        name: 'MindfulnessAlbum',
+        meta: { title: 'mindfulnessAlbum', icon: 'tab' }
       }
     ]
   },
   {
     path: '/nature',
+    name: 'Nature',
     component: Layout,
-    meta: { roles: ['admin', 'editor'] },
+    meta: {
+      title: 'nature',
+      icon: 'tab',
+      roles: ['admin', 'editor']
+    },
     children: [
       {
         path: 'index',
         component: () => import('@/views/nature/index'),
         name: 'Nature',
         meta: { title: 'nature', icon: 'tab' }
+      },
+      {
+        path: 'natureAlbum',
+        component: () => import('@/views/nature/natureAlbum'),
+        name: 'NatureAlbum',
+        meta: { title: 'natureAlbum', icon: 'tab' }
       }
     ]
   },
