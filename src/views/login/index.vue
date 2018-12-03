@@ -168,6 +168,11 @@ export default {
                 this.loading = false
               })
             }
+          }).catch(() => {
+            this.$store.dispatch('FedLogOut').then(() => {
+              this.$message.error('token过期重新登录')
+              this.loading = false
+            })
           })
           // this.$store.dispatch('LoginByUsername', this.loginForm).then(() => {
         } else {

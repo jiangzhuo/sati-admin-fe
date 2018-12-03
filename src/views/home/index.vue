@@ -542,7 +542,7 @@ export default {
       this.resetTemp()
       this.temp = _.cloneDeep(row)
       this.temp.validTime = this.temp.validTime * 1000
-      this.resourceOptions = [{ id: row.resourceId, name: this.resourceMap[row.resourceId].name }]
+      this.resourceOptions = [{ id: row.resourceId, name: _.get(this.resourceMap, [row.resourceId, name], '') }]
       // this.temp.productId = this.temp.productId.map((pid)=>{ return { value: pid } })
       this.tempBackgroundFileList = row.background ? row.background.map(x => ({ url: x })) : []
       this.dialogStatus = 'update'

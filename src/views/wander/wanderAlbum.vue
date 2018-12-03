@@ -277,14 +277,6 @@ export default {
     beforeBackgroundRemove(file) {
       return this.$confirm(`确定移除图片？`)
     },
-    beforeAudioUpload(file) {
-      const isLt20M = file.size / 1024 / 1024 < 20
-
-      if (!isLt20M) {
-        this.$message.error('上传头像图片大小不能超过 20MB!')
-      }
-      return isLt20M
-    },
     handleAudioSuccess(res, file, fileList) {
       console.log(fileList[fileList.length - 1].response.data)
       this.temp.audio = fileList[fileList.length - 1].response.data
@@ -354,7 +346,9 @@ export default {
       console.log(this.temp)
       this.temp.author = this.$store.getters.id
       // this.temp.productId = this.temp.productId.map((pidValue) => pidValue.value)
-      this.temp.price = parseInt(this.temp.price)
+      this.temp.price = parseInt(this.temp.price) || 0
+      this.temp.copy = this.temp.copy || ''
+      this.temp.description = this.temp.description || ''
       this.temp.validTime = Math.floor(this.temp.validTime / 1000)
       const data = await this.$apollo.mutate({
         // 查询语句
@@ -420,10 +414,11 @@ export default {
           updateData: {
             background: this.temp.background,
             name: this.temp.name,
-            description: this.temp.description,
+            description: this.temp.description || '',
+            copy: this.temp.copy || '',
             scenes: this.temp.scenes,
             // productId: this.temp.productId.map((pidValue) => pidValue.value),
-            price: parseInt(this.temp.price),
+            price: parseInt(this.temp.price) || 0,
             author: this.$store.getters.id,
             audio: this.temp.audio,
             status: this.temp.status,

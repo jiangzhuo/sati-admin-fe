@@ -153,7 +153,7 @@
             accept="audio/*"
             list-type="text">
             <el-button size="small" type="primary">点击上传</el-button>
-            <div slot="tip" class="el-upload__tip">只能上传音频文件，且不超过20M</div>
+            <!--<div slot="tip" class="el-upload__tip">只能上传音频文件，且不超过20M</div>-->
           </el-upload>
         </el-form-item>
         <el-form-item v-show="false" :label="$t('nature.author')" prop="author">
@@ -297,12 +297,13 @@ export default {
       return this.$confirm(`确定移除图片？`)
     },
     beforeAudioUpload(file) {
-      const isLt20M = file.size / 1024 / 1024 < 20
-
-      if (!isLt20M) {
-        this.$message.error('上传头像图片大小不能超过 20MB!')
-      }
-      return isLt20M
+      return true
+      // const isLt20M = file.size / 1024 / 1024 < 20
+      //
+      // if (!isLt20M) {
+      //   this.$message.error('上传头像图片大小不能超过 20MB!')
+      // }
+      // return isLt20M
     },
     handleAudioSuccess(res, file, fileList) {
       console.log(fileList[fileList.length - 1].response.data)
@@ -371,8 +372,10 @@ export default {
     },
     async createData() {
       console.log(this.temp)
+      this.temp.copy = this.temp.copy || ''
+      this.temp.description = this.temp.description || ''
       this.temp.author = this.$store.getters.id
-      this.temp.price = parseInt(this.temp.price)
+      this.temp.price = parseInt(this.temp.price) || 0
       this.temp.validTime = Math.floor(this.temp.validTime / 1000)
       // this.temp.productId = this.temp.productId.map((pidValue) => pidValue.value)
       const data = await this.$apollo.mutate({
@@ -439,13 +442,13 @@ export default {
           updateData: {
             background: this.temp.background,
             name: this.temp.name,
-            description: this.temp.description,
+            description: this.temp.description || '',
             scenes: this.temp.scenes,
             // productId: this.temp.productId.map((pidValue) => pidValue.value),
-            price: parseInt(this.temp.price),
+            price: parseInt(this.temp.price) || 0,
             author: this.$store.getters.id,
             audio: this.temp.audio,
-            copy: this.temp.copy,
+            copy: this.temp.copy || '',
             status: this.temp.status,
             validTime: Math.floor(this.temp.validTime / 1000)
           }
