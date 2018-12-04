@@ -1,5 +1,5 @@
 query admin {
-  getNatureAlbum {
+  getNatureAlbum(status:0) {
     code
     message
     data {

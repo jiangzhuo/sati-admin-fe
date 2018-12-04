@@ -1,5 +1,5 @@
 query admin {
-  getMindfulness {
+  getMindfulness(status:0) {
     code
     message
     data {

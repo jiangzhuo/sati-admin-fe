@@ -1,5 +1,5 @@
 query admin {
-  getNature {
+  getNature(status:0) {
     code
     message
     data {
