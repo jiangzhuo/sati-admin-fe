@@ -62,10 +62,9 @@
       <el-table-column :label="$t('wanderAlbum.status')" align="center">
         <template slot-scope="scope">
           <!--<span>{{ scope.row.status }}</span>-->
-          <el-tag v-if="scope.row.status&0b1" type="success">已删除</el-tag>
-          <el-tag v-else type="danger">未删除</el-tag>
-          <el-tag v-if="scope.row.status&0b10" type="success">第二标志位开</el-tag>
-          <el-tag v-else type="danger">第二标志位关</el-tag>
+          <template v-for="(value,index) in scope.row.status.toString(2).split('').reverse().map((x) => x==='1')">
+            <el-tag v-if="value" :key="index" type="success">{{ statusMap[index] }}</el-tag>
+          </template>
         </template>
       </el-table-column>
       <el-table-column :label="$t('wanderAlbum.updateTime')" align="center">
@@ -81,8 +80,8 @@
       <el-table-column :label="$t('wanderAlbum.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button type="primary" size="small" icon="el-icon-edit" @click="handleUpdate(scope.row)">{{ $t('wanderAlbum.edit') }}</el-button>
-          <el-button v-if="scope.row.status&0b1" type="info" size="small" icon="el-icon-delete" @click="handleRevertDeleted(scope.row)">{{ $t('wanderAlbum.revert') }}</el-button>
-          <el-button v-else type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row)">{{ $t('wanderAlbum.delete') }}</el-button>
+          <!--<el-button v-if="scope.row.status&0b1" type="info" size="small" icon="el-icon-delete" @click="handleRevertDeleted(scope.row)">{{ $t('wanderAlbum.revert') }}</el-button>-->
+          <!--<el-button v-else type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row)">{{ $t('wanderAlbum.delete') }}</el-button>-->
         </template>
       </el-table-column>
     </el-table>
@@ -135,6 +134,14 @@
               :label="sceneOption.id">{{ sceneOption.name }}</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
+        <el-form-item :label="$t('wanderAlbum.status')" prop="status">
+          <el-checkbox-group v-model="tempStatus">
+            <el-checkbox
+              v-for="(value,index) in statusMap"
+              :key="index"
+              :label="index">{{ value }}</el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
         <el-form-item :label="$t('wanderAlbum.copy')" prop="copy">
           <el-input
             :autosize="{ minRows: 2, maxRows: 4}"
@@ -176,6 +183,7 @@ export default {
   name: 'WanderAlbumTable',
   data() {
     return {
+      statusMap: ['已删除', '标志位2', '标志位3'],
       uploadBackgroundAPI: process.env.BASE_API + '/uploadBackground/',
       uploadAudioAPI: process.env.BASE_API + '/uploadBackground/',
       sceneMap: {},
@@ -222,6 +230,7 @@ export default {
       temp: {
         scenes: [], validTime: 0
       },
+      tempStatus: [],
       tempAudioFileList: [],
       tempBackgroundFileList: [],
       dialogStatus: 'create',
@@ -334,6 +343,7 @@ export default {
         scenes: []
         // productId: []
       }
+      this.tempStatus = []
       this.tempAudioFileList = []
       this.tempBackgroundFileList = []
     },
@@ -350,6 +360,7 @@ export default {
       this.temp.copy = this.temp.copy || ''
       this.temp.description = this.temp.description || ''
       this.temp.validTime = Math.floor(this.temp.validTime / 1000)
+      this.temp.status = this.tempStatus.reduce((accumulator, currentValue) => accumulator | (1 << currentValue), 0)
       const data = await this.$apollo.mutate({
         // 查询语句
         mutation: WANDER_ALBUM_CREATE,
@@ -394,6 +405,7 @@ export default {
       this.resetTemp()
       this.temp = _.cloneDeep(row)
       this.temp.validTime = this.temp.validTime * 1000
+      this.tempStatus = this.temp.status.toString(2).split('').reverse().map((value, index) => value === '1' ? index : undefined).filter(val => val !== undefined)
       // this.temp.productId = this.temp.productId.map((pid)=>{ return { value: pid } })
       this.tempBackgroundFileList = row.background ? row.background.map(x => ({ url: x })) : []
       this.tempAudioFileList = row.audio ? [{ url: row.audio }] : []
@@ -421,7 +433,7 @@ export default {
             price: parseInt(this.temp.price) || 0,
             author: this.$store.getters.id,
             audio: this.temp.audio,
-            status: this.temp.status,
+            status: this.tempStatus.reduce((accumulator, currentValue) => accumulator | (1 << currentValue), 0),
             validTime: Math.floor(this.temp.validTime / 1000)
           }
         }
