@@ -1,11 +1,24 @@
-query admin ($keyword: String!){
-  searchMindfulness(keyword: $keyword) {
+query admin ($keyword: String, $page: Int, $limit: Int){
+  searchMindfulness(keyword: $keyword, page: $page, limit: $limit) {
     code
     message
     data {
+      total
       data{
         id
+        background
         name
+        description
+        scenes
+        price
+        createTime
+        updateTime
+        author
+        audio
+        copy
+        mindfulnessAlbums
+        status
+        validTime
       }
     }
   }

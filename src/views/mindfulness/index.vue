@@ -1,13 +1,15 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
+      <el-input :placeholder="$t('mindfulness.keyword')" v-model="listQuery.keyword" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter"/>
+      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-search" @click="handleFilter">{{ $t('user.search') }}</el-button>
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('mindfulness.add') }}</el-button>
-      <el-checkbox-group v-model="statusFilter" class="filter-item" style="margin-left:15px;" @change="handleCheckStatusFilter">
-        <el-checkbox
-          v-for="(value,index) in statusMap"
-          :key="index"
-          :label="index">{{ value }}</el-checkbox>
-      </el-checkbox-group>
+      <!--<el-checkbox-group v-model="statusFilter" class="filter-item" style="margin-left:15px;" @change="handleCheckStatusFilter">-->
+      <!--<el-checkbox-->
+      <!--v-for="(value,index) in statusMap"-->
+      <!--:key="index"-->
+      <!--:label="index">{{ value }}</el-checkbox>-->
+      <!--</el-checkbox-group>-->
     </div>
 
     <el-table v-loading="listLoading" ref="dataTable" :data="mindfulnessList" border fit highlight-current-row style="width: 100%;">
@@ -203,6 +205,9 @@
       </div>
     </el-dialog>
 
+    <div class="pagination-container">
+      <el-pagination v-show="total>0" :current-page="listQuery.page" :page-sizes="[10,20,30, 50]" :page-size="listQuery.limit" :total="total" background layout="total, sizes, prev, pager, next, jumper" @size-change="handleSizeChange" @current-change="handleCurrentChange"/>
+    </div>
   </div>
 </template>
 
@@ -211,7 +216,7 @@
 
 // import * as OSS from 'ali-oss'
 import * as _ from 'lodash'
-import MINDFULNESS_ALL from '@/graphqls/mindfulnessAll.graphql'
+import MINDFULNESS_SEARCH from '@/graphqls/mindfulnessSearch.graphql'
 import SCENE_ALL from '@/graphqls/sceneAll.graphql'
 import MINDFULNESS_ALBUM_ALL from '@/graphqls/mindfulnessAlbumAll.graphql'
 import MINDFULNESS_UPDATE from '@/graphqls/mindfulnessUpdate.graphql'
@@ -276,7 +281,13 @@ export default {
       tempAudioFileList: [],
       tempBackgroundFileList: [],
       dialogStatus: 'create',
-      dialogFormVisible: false
+      dialogFormVisible: false,
+      total: null,
+      listQuery: {
+        page: 1,
+        limit: 20,
+        keyword: ''
+      }
     }
   },
   async created() {
@@ -386,22 +397,36 @@ export default {
       this.listLoading = true
       const result = await this.$apollo.query({
         // 查询语句
-        query: MINDFULNESS_ALL,
+        query: MINDFULNESS_SEARCH,
         // 参数
         variables: {
-          first: 20,
-          status: status
+          page: this.listQuery.page,
+          limit: this.listQuery.limit,
+          keyword: this.listQuery.keyword || '*'
         },
         fetchPolicy: 'network-only' // 只从网络获取
       })
-      const promises = result.data.getMindfulness.data.map((mindfulness) => {
+      const promises = result.data.searchMindfulness.data.data.map((mindfulness) => {
         return this.getUser(mindfulness.author)
       })
       console.log(result)
       await Promise.all(promises)
       console.log(this.userMap)
-      this.mindfulnessList = result.data.getMindfulness.data
+      this.mindfulnessList = result.data.searchMindfulness.data.data
+      this.total = result.data.searchMindfulness.data.total
       this.listLoading = false
+    },
+    handleFilter() {
+      this.listQuery.page = 1
+      this.getList()
+    },
+    handleSizeChange(val) {
+      this.listQuery.limit = val
+      this.getList()
+    },
+    handleCurrentChange(val) {
+      this.listQuery.page = val
+      this.getList()
     },
     resetTemp() {
       this.temp = {
@@ -437,16 +462,6 @@ export default {
       })
 
       console.log('getList')
-      // const result = await this.$apollo.query({
-      //   // 查询语句
-      //   query: MINDFULNESS_ALL,
-      //   // 参数
-      //   variables: {
-      //     first: 20
-      //   },
-      //   fetchPolicy: 'network-only' // 只从网络获取
-      // })
-      // this.mindfulnessList = result.data.getMindfulness.data
       await this.getList()
 
       if (data.data.createMindfulness.code !== 200) {
