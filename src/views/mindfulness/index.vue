@@ -1,7 +1,13 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-button style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('mindfulness.add') }}</el-button>
+      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('mindfulness.add') }}</el-button>
+      <el-checkbox-group v-model="statusFilter" class="filter-item" style="margin-left:15px;" @change="handleCheckStatusFilter">
+        <el-checkbox
+          v-for="(value,index) in statusMap"
+          :key="index"
+          :label="index">{{ value }}</el-checkbox>
+      </el-checkbox-group>
     </div>
 
     <el-table v-loading="listLoading" ref="dataTable" :data="mindfulnessList" border fit highlight-current-row style="width: 100%;">
@@ -219,9 +225,11 @@ export default {
   data() {
     return {
       statusMap: ['已删除', '标志位2', '标志位3'],
+      statusFilter: [],
       sceneMap: {},
       sceneOptions: [],
       userMap: {},
+      mindfulnessAlbumOptions: [],
       mindfulnessAlbumMap: {},
       uploadBackgroundAPI: process.env.BASE_API + '/uploadBackground/',
       uploadAudioAPI: process.env.BASE_API + '/uploadBackground/',
@@ -286,6 +294,11 @@ export default {
     // addProductId() {
     //   this.temp.productId.push({ value: '' })
     // },
+    async handleCheckStatusFilter(value) {
+      // console.log(value)
+      // console.log(value.reduce((accumulator, currentValue) => accumulator | (1 << currentValue), 0))
+      await this.getList(value.reduce((accumulator, currentValue) => accumulator | (1 << currentValue), 0))
+    },
     beforeBackgroundUpload(file) {
       const isLt20M = file.size / 1024 / 1024 < 20
       if (!isLt20M) {
@@ -351,7 +364,7 @@ export default {
       })
     },
     async getMindfulnessAlbumAll() {
-      const result = await this.$apollo.query({ query: MINDFULNESS_ALBUM_ALL })
+      const result = await this.$apollo.query({ query: MINDFULNESS_ALBUM_ALL, variables: { status: 0 }})
       this.mindfulnessAlbumOptions = result.data.getMindfulnessAlbum.data
       result.data.getMindfulnessAlbum.data.forEach((mindfulnessAlbum) => {
         this.mindfulnessAlbumMap[mindfulnessAlbum.id] = mindfulnessAlbum
@@ -369,14 +382,15 @@ export default {
       console.log(result)
       this.userMap[userId] = result.data.getUserById.data
     },
-    async getList() {
+    async getList(status = 0) {
       this.listLoading = true
       const result = await this.$apollo.query({
         // 查询语句
         query: MINDFULNESS_ALL,
         // 参数
         variables: {
-          first: 20
+          first: 20,
+          status: status
         },
         fetchPolicy: 'network-only' // 只从网络获取
       })

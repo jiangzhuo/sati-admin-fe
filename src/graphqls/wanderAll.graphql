@@ -1,5 +1,5 @@
-query admin {
-  getWander(status:0) {
+query admin($first: Int, $after: Int, $before: Int, $status: Int) {
+  getWander(first: $first, after: $after, before: $before, status: $status) {
     code
     message
     data {
