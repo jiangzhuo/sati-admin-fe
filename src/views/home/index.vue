@@ -7,7 +7,7 @@
     <el-table v-loading="listLoading" ref="dataTable" :data="homeList" border fit highlight-current-row style="width: 100%;">
       <el-table-column type="expand" >
         <template slot-scope="scope" >
-          <el-form v-if="scope.row.resourceId!=='000000000000000000000000'" label-position="left" inline class="demo-table-expand">
+          <el-form v-if="resourceMap[scope.row.resourceId]" label-position="left" inline class="demo-table-expand">
             <el-form-item label="资源id">
               <span>{{ scope.row.resourceId }}</span>
             </el-form-item>
