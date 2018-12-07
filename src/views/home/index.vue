@@ -190,6 +190,9 @@
       </div>
     </el-dialog>
 
+    <div class="pagination-container">
+      <el-pagination v-show="total>0" :current-page="listQuery.page" :page-sizes="[10,20,30, 50]" :page-size="listQuery.limit" :total="total" background layout="total, sizes, prev, pager, next, jumper" @size-change="handleSizeChange" @current-change="handleCurrentChange"/>
+    </div>
   </div>
 </template>
 
@@ -264,7 +267,13 @@ export default {
       tempAudioFileList: [],
       tempBackgroundFileList: [],
       dialogStatus: 'create',
-      dialogFormVisible: false
+      dialogFormVisible: false,
+      total: null,
+      listQuery: {
+        page: 1,
+        limit: 20,
+        keyword: ''
+      }
     }
   },
   async created() {
@@ -456,26 +465,40 @@ export default {
         query: HOME_ALL,
         // 参数
         variables: {
-          first: 20
+          page: this.listQuery.page,
+          limit: this.listQuery.limit
         },
         fetchPolicy: 'network-only' // 只从网络获取
       })
       console.log(result.data)
-      const getUserPromises = result.data.getHome.data.map((home) => {
+      const getUserPromises = result.data.getHomeByPageAndLimit.data.map((home) => {
         return this.getUser(home.author)
       })
       await Promise.all(getUserPromises)
-      const getResourcePromises = result.data.getHome.data.map((home) => {
+      const getResourcePromises = result.data.getHomeByPageAndLimit.data.map((home) => {
         return this.getResource(home.type, home.resourceId)
       })
       await Promise.all(getResourcePromises)
       console.log(this.userMap)
       console.log(this.resourceMap)
-      this.homeList = result.data.getHome.data
+      this.homeList = result.data.getHomeByPageAndLimit.data
+      this.total = result.data.countHome.data
       this.listLoading = false
       // this.$nextTick(() => {
       //   this.setSort()
       // })
+    },
+    handleFilter() {
+      this.listQuery.page = 1
+      this.getList()
+    },
+    handleSizeChange(val) {
+      this.listQuery.limit = val
+      this.getList()
+    },
+    handleCurrentChange(val) {
+      this.listQuery.page = val
+      this.getList()
     },
     resetTemp() {
       this.temp = { resourceId: '', position: 0 }

@@ -1,5 +1,5 @@
-query admin {
-  getHome {
+query admin($page: Int, $limit: Int) {
+  getHomeByPageAndLimit(page: $page, limit: $limit) {
     code
     message
     data {
@@ -15,5 +15,10 @@ query admin {
       validTime
       author
     }
+  }
+  countHome{
+    code
+    message
+    data
   }
 }
