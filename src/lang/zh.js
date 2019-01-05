@@ -2,6 +2,7 @@ export default {
   route: {
     user: '用户',
     home: '应用首页',
+    discount: '限时折扣',
     scene: '场景',
     mindfulness: '正念',
     mindfulnessAlbum: '正念合集',
@@ -106,6 +107,27 @@ export default {
     confirm: '确认',
     update: '更新',
     add: '添加'
+  },
+  discount: {
+    id: '唯一id',
+    type: '类型',
+    resourceId: '资源id',
+    name: '名称',
+    description: '描述',
+    background: '背景图',
+    author: '作者',
+    position: '位置',
+    createTime: '创建时间',
+    updateTime: '更新时间',
+    validTime: '生效时间',
+    actions: '操作',
+    cancel: '取消',
+    confirm: '确认',
+    update: '更新',
+    add: '添加',
+    discount: '折扣',
+    beginTime: '开始时间',
+    endTime: '结束时间'
   },
   scene: {
     add: '添加',

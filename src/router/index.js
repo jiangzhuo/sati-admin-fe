@@ -146,6 +146,19 @@ export const asyncRouterMap = [
     ]
   },
   {
+    path: '/discount',
+    component: Layout,
+    meta: { roles: ['admin', 'editor'] },
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/discount/index'),
+        name: 'Discount',
+        meta: { title: 'discount', icon: 'tab' }
+      }
+    ]
+  },
+  {
     path: '/scene',
     component: Layout,
     meta: { roles: ['admin', 'editor'] },

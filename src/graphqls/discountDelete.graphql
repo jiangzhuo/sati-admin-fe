@@ -1,0 +1,6 @@
+mutation admin ($id: String!) {
+  deleteDiscount(id: $id) {
+    code
+    message
+  }
+}

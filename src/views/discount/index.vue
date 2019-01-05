@@ -1,10 +1,10 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-button style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('home.add') }}</el-button>
+      <el-button style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('discount.add') }}</el-button>
     </div>
 
-    <el-table v-loading="listLoading" ref="dataTable" :data="homeList" border fit highlight-current-row style="width: 100%;">
+    <el-table v-loading="listLoading" ref="dataTable" :data="discountList" border fit highlight-current-row style="width: 100%;">
       <el-table-column type="expand" >
         <template slot-scope="scope" >
           <el-form v-if="resourceMap[scope.row.resourceId]" label-position="left" inline class="demo-table-expand">
@@ -17,7 +17,7 @@
             <el-form-item label="资源描述">
               <span>{{ resourceMap[scope.row.resourceId].description }}</span>
             </el-form-item>
-            <el-form-item label="价格">
+            <el-form-item label="原始价格">
               <span>{{ resourceMap[scope.row.resourceId].price }}</span>
             </el-form-item>
             <el-form-item label="适用场景">
@@ -34,63 +34,57 @@
           </el-form>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('home.id')" align="center">
+      <el-table-column :label="$t('discount.id')" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('home.type')" align="center">
+      <el-table-column :label="$t('discount.type')" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.type }}</span>
         </template>
       </el-table-column>
-      <el-table-column v-if="false" :label="$t('home.resourceId')" align="center">
+      <el-table-column v-if="false" :label="$t('discount.resourceId')" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.resourceId }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('home.name')" align="center">
+      <el-table-column :label="$t('discount.name')" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('home.description')" align="center">
+      <el-table-column :label="$t('discount.discount')" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.description }}</span>
+          <span>{{ scope.row.discount }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('home.background')" align="center">
+      <el-table-column :label="$t('discount.background')" align="center">
         <template slot-scope="scope">
           <a href="https://developer.mozilla.org/"><img :src="scope.row.background[0]" style="width: auto; height: auto; max-width: 100%; max-height: 100%;"></a>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('home.author')" align="center">
-        <template slot-scope="scope">
-          <a :href="'user/userInfo?userId='+scope.row.author" target="_blank">{{ userMap[scope.row.author]?userMap[scope.row.author].nickname:scope.row.author }}</a>
-          <!--<a href="index.vue">{{ userMap[scope.row.author]?userMap[scope.row.author].nickname:scope.row.author }}</a>-->
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('home.position')" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.position }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('home.createTime')" align="center">
+      <el-table-column :label="$t('discount.createTime')" align="center">
         <template slot-scope="scope">
           <span>{{ new Date(scope.row.createTime*1000) }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('home.updateTime')" align="center">
+      <el-table-column :label="$t('discount.updateTime')" align="center">
         <template slot-scope="scope">
           <span>{{ new Date(scope.row.updateTime*1000) }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('home.validTime')" align="center">
+      <el-table-column :label="$t('discount.beginTime')" align="center">
         <template slot-scope="scope">
-          <span>{{ new Date(scope.row.validTime*1000) }}</span>
+          <span>{{ new Date(scope.row.beginTime*1000) }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('home.actions')" align="center" width="230" class-name="small-padding fixed-width">
+      <el-table-column :label="$t('discount.endTime')" align="center">
+        <template slot-scope="scope">
+          <span>{{ new Date(scope.row.endTime*1000) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('discount.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button type="primary" size="small" icon="el-icon-edit" @click="handleUpdate(scope.row)">Edit</el-button>
           <!--<el-button v-if="scope.row.status&0b1" type="info" size="small" icon="el-icon-delete" @click="handleRevertDeleted(scope.row)">revert</el-button>-->
@@ -104,27 +98,18 @@
         </template>
       </el-table-column>
     </el-table>
-    <div v-if="false" class="show-d">{{ $t('home.dragTips1') }} : {{ oldList }}</div>
-    <div v-if="false" class="show-d">{{ $t('home.dragTips2') }} : {{ newList }}</div>
 
     <el-dialog :title="dialogStatus" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item :label="$t('home.name')" prop="name">
+        <el-form-item :label="$t('discount.name')" prop="name">
           <el-input v-model="temp.name"/>
         </el-form-item>
-        <el-form-item :label="$t('home.description')" prop="description">
-          <el-input
-            :autosize="{ minRows: 2, maxRows: 4}"
-            v-model="temp.description"
-            type="textarea"
-            placeholder="请输入内容"/>
-        </el-form-item>
-        <el-form-item :label="$t('home.type')" prop="type">
+        <el-form-item :label="$t('discount.type')" prop="type">
           <el-select v-model="temp.type" placeholder="请选择" @change="clearResource">
-            <el-option v-for="item in homeOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
+            <el-option v-for="item in discountOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
           </el-select>
         </el-form-item>
-        <el-form-item :label="$t('home.resourceId')" prop="resourceId">
+        <el-form-item :label="$t('discount.resourceId')" prop="resourceId">
           <el-select
             v-model="temp.resourceId"
             :remote-method="remoteMethod"
@@ -148,7 +133,7 @@
           :before-filter="beforeFilter"
           filterable
           @active-item-change="handleItemChange"/>
-        <el-form-item :label="$t('home.background')" prop="background">
+        <el-form-item :label="$t('discount.background')" prop="background">
           <el-upload
             :on-success="handleBackgroundSuccess"
             :before-upload="beforeBackgroundUpload"
@@ -164,7 +149,7 @@
         </el-form-item>
         <!--<el-form-item-->
         <!--v-for="(item, index) in temp.productId"-->
-        <!--:label="$t('home.productId')"-->
+        <!--:label="$t('discount.productId')"-->
         <!--:key="'productId.' + index"-->
         <!--prop="productId">-->
         <!--<el-input v-model="item.value"/>-->
@@ -173,20 +158,23 @@
         <!--<el-form-item>-->
         <!--<el-button @click="addProductId">新增productId</el-button>-->
         <!--</el-form-item>-->
-        <el-form-item v-show="false" :label="$t('home.author')" prop="author">
-          <el-input v-model="temp.author"/>
+        <el-form-item :label="$t('discount.discount')" prop="discount">
+          <el-input-number v-model="temp.discount" :min="0" :max="100"/>
         </el-form-item>
-        <el-form-item :label="$t('home.position')" prop="author">
-          <el-input-number v-model="temp.position" :min="0" :max="10"/>
-        </el-form-item>
-        <el-form-item :label="$t('home.validTime')" prop="validTime">
-          <el-date-picker v-model="temp.validTime" type="datetime" value-format="timestamp" placeholder="Please pick a date"/>
+        <el-form-item :label="$t('discount.validTime')" prop="beginEndTime">
+          <el-date-picker
+            v-model="tempBeginEndTime"
+            type="datetimerange"
+            value-format="timestamp"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">{{ $t('home.cancel') }}</el-button>
-        <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">{{ $t('home.confirm') }}</el-button>
-        <el-button v-else type="primary" @click="updateData">{{ $t('home.update') }}</el-button>
+        <el-button @click="dialogFormVisible = false">{{ $t('discount.cancel') }}</el-button>
+        <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">{{ $t('discount.confirm') }}</el-button>
+        <el-button v-else type="primary" @click="updateData">{{ $t('discount.update') }}</el-button>
       </div>
     </el-dialog>
 
@@ -221,10 +209,10 @@
 
 // import * as OSS from 'ali-oss'
 import * as _ from 'lodash'
-import HOME_ALL from '@/graphqls/homeAll.graphql'
-import HOME_UPDATE from '@/graphqls/homeUpdate.graphql'
-import HOME_DELETE from '@/graphqls/homeDelete.graphql'
-import HOME_CREATE from '@/graphqls/homeCreate.graphql'
+import DISCOUNT_ALL from '@/graphqls/discountAll.graphql'
+import DISCOUNT_UPDATE from '@/graphqls/discountUpdate.graphql'
+import DISCOUNT_DELETE from '@/graphqls/discountDelete.graphql'
+import DISCOUNT_CREATE from '@/graphqls/discountCreate.graphql'
 import USER_BY_ID from '@/graphqls/userById.graphql'
 import SCENE_ALL from '@/graphqls/sceneAll.graphql'
 import MINDFULNESS_BY_ID from '@/graphqls/mindfulnessById.graphql'
@@ -238,15 +226,13 @@ import WANDER_ALBUM_SEARCH from '@/graphqls/wanderAlbumSearch.graphql'
 // import Sortable from 'sortablejs'
 
 export default {
-  name: 'HomeTable',
+  name: 'DiscountTable',
   data() {
     return {
-      homeOptions: [
+      discountOptions: [
         { key: 'mindfulness', display_name: '正念' },
         { key: 'nature', display_name: '自然' },
-        { key: 'wander', display_name: '漫步' },
-        { key: 'wanderAlbum', display_name: '漫步专辑' },
-        { key: 'shop', display_name: '商城(暂不支持)' }
+        { key: 'wander', display_name: '漫步' }
       ],
       uploadAPI: process.env.BASE_API + '/uploadBackground/',
       sceneMap: {},
@@ -257,15 +243,16 @@ export default {
         value: 'id',
         label: 'name'
       },
-      homeList: [],
+      discountList: [],
       sortable: null,
       oldList: [],
       newList: [],
       listLoading: true,
       resourceOptionsLoading: true,
-      temp: { resourceId: '', position: 0, validTime: 0 },
+      temp: { resourceId: '', position: 0 },
       tempAudioFileList: [],
       tempBackgroundFileList: [],
+      tempBeginEndTime: [],
       dialogStatus: 'create',
       dialogFormVisible: false,
       total: null,
@@ -291,8 +278,8 @@ export default {
     //       // Detail see : https://github.com/RubaXa/Sortable/issues/1012
     //     },
     //     onEnd: evt => {
-    //       const targetRow = this.homeList.splice(evt.oldIndex, 1)[0]
-    //       this.homeList.splice(evt.newIndex, 0, targetRow)
+    //       const targetRow = this.discountList.splice(evt.oldIndex, 1)[0]
+    //       this.discountList.splice(evt.newIndex, 0, targetRow)
     //
     //       // for show the changes, you can delete in you code
     //       const tempIndex = this.newList.splice(evt.oldIndex, 1)[0]
@@ -456,13 +443,16 @@ export default {
       // const index = _.findIndex(this.resourceOptions, { id: type })
       // this.resourceOptions[index].children.push({ id: resourceId, name: this.resourceMap[resourceId].name })
       // console.log(this.resourceOptions)
+      if (!this.resourceMap[resourceId]) {
+        return
+      }
       await this.getUser(this.resourceMap[resourceId].author)
     },
     async getList() {
       this.listLoading = true
       const result = await this.$apollo.query({
         // 查询语句
-        query: HOME_ALL,
+        query: DISCOUNT_ALL,
         // 参数
         variables: {
           page: this.listQuery.page,
@@ -471,18 +461,18 @@ export default {
         fetchPolicy: 'network-only' // 只从网络获取
       })
       console.log(result.data)
-      const getUserPromises = result.data.getHomeByPageAndLimit.data.map((home) => {
-        return this.getUser(home.author)
-      })
-      await Promise.all(getUserPromises)
-      const getResourcePromises = result.data.getHomeByPageAndLimit.data.map((home) => {
-        return this.getResource(home.type, home.resourceId)
+      // const getUserPromises = result.data.getDiscountByPageAndLimit.data.map((discount) => {
+      //   return this.getUser(discount.author)
+      // })
+      // await Promise.all(getUserPromises)
+      const getResourcePromises = result.data.getDiscountByPageAndLimit.data.map((discount) => {
+        return this.getResource(discount.type, discount.resourceId)
       })
       await Promise.all(getResourcePromises)
       console.log(this.userMap)
       console.log(this.resourceMap)
-      this.homeList = result.data.getHomeByPageAndLimit.data
-      this.total = result.data.countHome.data
+      this.discountList = result.data.getDiscountByPageAndLimit.data
+      this.total = result.data.countDiscount.data
       this.listLoading = false
       // this.$nextTick(() => {
       //   this.setSort()
@@ -501,9 +491,10 @@ export default {
       this.getList()
     },
     resetTemp() {
-      this.temp = { resourceId: '', position: 0 }
+      this.temp = { resourceId: '', discount: 0, beginEndTime: [] }
       this.tempAudioFileList = []
       this.tempBackgroundFileList = []
+      this.tempBeginEndTime = []
     },
     handleCreate() {
       this.resetTemp()
@@ -513,7 +504,6 @@ export default {
     async createData() {
       // this.temp.type = this.temp.typeAndResourceId[0]
       // this.temp.resourceId = this.temp.typeAndResourceId[1]
-      this.temp.author = this.$store.getters.id
       console.log(this.temp)
       if (this.temp.type === 'shop') {
         this.temp.resourceId = '000000000000000000000000'
@@ -524,7 +514,7 @@ export default {
       // this.temp.productId = this.temp.productId.map((pidValue) => pidValue.value)
       const data = await this.$apollo.mutate({
         // 查询语句
-        mutation: HOME_CREATE,
+        mutation: DISCOUNT_CREATE,
         // 参数
         variables: {
           createData: {
@@ -532,10 +522,9 @@ export default {
             resourceId: this.temp.resourceId,
             background: this.temp.background,
             name: this.temp.name,
-            description: this.temp.description,
-            author: this.temp.author,
-            position: this.temp.position,
-            validTime: Math.floor(this.temp.validTime / 1000)
+            discount: this.temp.discount,
+            beginTime: Math.floor(this.tempBeginEndTime[0] / 1000),
+            endTime: Math.floor(this.tempBeginEndTime[1] / 1000)
           }
         }
       })
@@ -543,10 +532,10 @@ export default {
       console.log('getList')
       await this.getList()
 
-      if (data.data.createHome.code !== 200) {
+      if (data.data.createDiscount.code !== 200) {
         this.$notify({
           title: '失败',
-          message: data.data.createHome.message,
+          message: data.data.createDiscount.message,
           type: 'error',
           duration: 2000
         })
@@ -564,10 +553,10 @@ export default {
     handleUpdate(row) {
       this.resetTemp()
       this.temp = _.cloneDeep(row)
-      this.temp.validTime = this.temp.validTime * 1000
       this.resourceOptions = [{ id: row.resourceId, name: _.get(this.resourceMap, [row.resourceId, name], '') }]
       // this.temp.productId = this.temp.productId.map((pid)=>{ return { value: pid } })
       this.tempBackgroundFileList = row.background ? row.background.map(x => ({ url: x })) : []
+      this.tempBeginEndTime = [row.beginTime * 1000, row.endTime * 1000]
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
     },
@@ -585,7 +574,7 @@ export default {
       }
       await this.$apollo.mutate({
         // 查询语句
-        mutation: HOME_UPDATE,
+        mutation: DISCOUNT_UPDATE,
         // 参数
         variables: {
           id: this.temp.id,
@@ -594,10 +583,9 @@ export default {
             resourceId: this.temp.resourceId,
             background: this.temp.background,
             name: this.temp.name,
-            description: this.temp.description,
-            author: this.temp.author,
-            position: this.temp.position,
-            validTime: Math.floor(this.temp.validTime / 1000)
+            discount: this.temp.discount,
+            beginTime: Math.floor(this.tempBeginEndTime[0] / 1000),
+            endTime: Math.floor(this.tempBeginEndTime[1] / 1000)
           }
         }
       })
@@ -616,7 +604,7 @@ export default {
       this.listLoading = true
       await this.$apollo.mutate({
         // 查询语句
-        mutation: HOME_DELETE,
+        mutation: DISCOUNT_DELETE,
         // 参数
         variables: {
           id: row.id

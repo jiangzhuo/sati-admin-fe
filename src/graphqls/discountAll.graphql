@@ -1,0 +1,23 @@
+query admin($page: Int, $limit: Int) {
+  getDiscountByPageAndLimit(page: $page, limit: $limit) {
+    code
+    message
+    data {
+      id
+      type
+      resourceId
+      background
+      name
+      discount
+      createTime
+      updateTime
+      beginTime
+      endTime
+    }
+  }
+  countDiscount{
+    code
+    message
+    data
+  }
+}
