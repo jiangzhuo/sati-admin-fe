@@ -17,6 +17,7 @@ mutation admin($id: String!, $updateData: updateMindfulnessRequest!) {
       mindfulnessAlbums
       status
       validTime
+      natureId
     }
   }
 }

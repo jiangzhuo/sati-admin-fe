@@ -155,7 +155,8 @@ export default {
     confirm: '确认',
     add: '添加',
     mindfulnessAlbums: '正态合集',
-    keyword: '关键词(名称、描述、文案)'
+    keyword: '关键词(名称、描述、文案)',
+    natureId: '背景自然音'
   },
   mindfulnessAlbum: {
     id: '唯一id',

@@ -16,6 +16,7 @@ mutation admin($createData: createMindfulnessRequest!) {
       mindfulnessAlbums
       status
       validTime
+      natureId
     }
   }
 }

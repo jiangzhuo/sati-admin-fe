@@ -17,6 +17,7 @@ query admin($first: Int, $after: Int, $before: Int, $status: Int) {
       mindfulnessAlbums
       status
       validTime
+      natureId
     }
   }
 }

@@ -19,6 +19,7 @@ query admin ($keyword: String, $page: Int, $limit: Int){
         mindfulnessAlbums
         status
         validTime
+        natureId
       }
     }
   }

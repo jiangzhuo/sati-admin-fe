@@ -16,6 +16,7 @@ query admin($id: String!) {
       mindfulnessAlbums
       status
       validTime
+      natureId
     }
   }
 }
