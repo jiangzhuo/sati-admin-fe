@@ -1,0 +1,7 @@
+query admin($from: Int!, $to: Int!) {
+  userCount(from: $from, to: $to) {
+    code
+    message
+    data
+  }
+}
