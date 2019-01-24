@@ -142,7 +142,7 @@ export default {
                 this.loading = false
               })
             } else {
-              this.$store.dispatch('LoginByUsername', data.loginByMobileAndPassword.data.accessToken).then(() => {
+              this.$store.dispatch('LoginByUsername', data.loginByMobileAndPassword.data).then(() => {
                 this.loading = false
                 onLogin(this.$apollo.provider.defaultClient, getToken()).then(() => {
                   // this.$apollo.query({ query: USER_CURRENT }).then((currentUserResult) => {

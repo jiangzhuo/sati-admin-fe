@@ -235,6 +235,7 @@ export default {
       sceneOptions: [],
       userMap: {},
       natureAlbumMap: {},
+      natureAlbumOptions: [],
       uploadBackgroundAPI: process.env.BASE_API + '/uploadBackground/',
       uploadAudioAPI: process.env.BASE_API + '/uploadBackground/',
       natureList: [

@@ -51,10 +51,10 @@ const user = {
 
   actions: {
     // 用户名登录
-    LoginByUsername({ commit, vue }, token) {
+    LoginByUsername({ commit, vue }, tokenRes) {
       return new Promise((resolve) => {
-        commit('SET_TOKEN', 'bearer ' + token)
-        setToken('bearer ' + token)
+        commit('SET_TOKEN', 'bearer ' + tokenRes.accessToken)
+        setToken('bearer ' + tokenRes.accessToken, tokenRes.expiresIn)
         resolve()
       })
       // return new Promise((resolve, reject) => {
